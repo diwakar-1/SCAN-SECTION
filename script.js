@@ -1,17 +1,20 @@
 /* ==========================================================================
-   SPIDER-VERSE MINIMAL 3D SPLIT VIEW CARD INTERACTION & PHYSICS
+   SPIDER-VERSE MINIMAL RANDOM 3D FLIP CARD INTERACTION & PHYSICS
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Track Flip State per Card ID (1, 2, 3, 4)
-  const cardStates = {
-    1: false,
-    2: false,
-    3: false,
-    4: false
-  };
+  // Pool of available dossier cards in the list
+  const cardsList = [
+    { id: 1, name: "CARD 01", front: "front_image.png", back: "back_image.png" },
+    { id: 2, name: "CARD 02", front: "front 2.png", back: "back 2.png" },
+    { id: 3, name: "CARD 03", front: "front 3.png", back: "back 3.png" },
+    { id: 4, name: "CARD 04", front: "front 4.png", back: "back 4.png" }
+  ];
 
-  // Sound FX State
+  let currentCardIndex = Math.floor(Math.random() * cardsList.length);
+  let isFlipped = false;
+
+  // Audio FX State
   let soundEnabled = true;
   let audioCtx = null;
 
@@ -237,96 +240,152 @@ document.addEventListener('DOMContentLoaded', () => {
   animateCanvas();
 
   // ==========================================================================
-  // SPLIT VIEW CARD FLIP & 3D TILT MECHANICS
+  // RANDOM CARD SELECTION & 3D FLIP MECHANICS
   // ==========================================================================
-  const cards = document.querySelectorAll('.spider-card');
+  const cardContainer = document.getElementById('cardContainer');
+  const flipCard = document.getElementById('flipCard');
+  const frontImg = document.getElementById('frontImg');
+  const backImg = document.getElementById('backImg');
+  const flipPromptBtn = document.getElementById('flipPromptBtn');
+  const statusText = document.getElementById('statusText');
+  const statusBadge = document.getElementById('cardStatusBadge');
+  const cardListSelect = document.getElementById('cardListSelect');
+  const drawRandomBtn = document.getElementById('drawRandomBtn');
+  const secondaryRandomBtn = document.getElementById('secondaryRandomBtn');
 
-  // Toggle Flip State for a Single Card
-  function toggleCardFlip(cardElement, e) {
-    const id = cardElement.getAttribute('data-id');
-    const flipCard = document.getElementById(`flipCard-${id}`);
-    const sideLabel = cardElement.querySelector('.card-side-label');
+  // Update Status Badge UI
+  function updateStatusBadge() {
+    const cardData = cardsList[currentCardIndex];
+    if (isFlipped) {
+      statusText.textContent = `${cardData.name} • SIDE B (BACK SPECS)`;
+      statusBadge.style.borderColor = 'rgba(230, 0, 18, 0.4)';
+      statusBadge.style.boxShadow = '0 0 15px rgba(230, 0, 18, 0.2)';
+    } else {
+      statusText.textContent = `${cardData.name} • SIDE A (FRONT COVER)`;
+      statusBadge.style.borderColor = 'rgba(0, 240, 255, 0.3)';
+      statusBadge.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.15)';
+    }
+  }
 
-    cardStates[id] = !cardStates[id];
-    const isFlipped = cardStates[id];
+  // Load Specific Card by Index
+  function loadCard(index) {
+    currentCardIndex = index;
+    isFlipped = false;
+
+    // Trigger visual switch animation
+    cardContainer.classList.add('switching');
+    playWebThwipSound(1800);
+
+    setTimeout(() => {
+      // Reset flip rotation
+      flipCard.classList.remove('flipped');
+      flipCard.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+
+      // Update image sources
+      const data = cardsList[currentCardIndex];
+      frontImg.src = data.front;
+      backImg.src = data.back;
+
+      // Sync dropdown select element
+      cardListSelect.value = currentCardIndex;
+
+      updateStatusBadge();
+
+      // Fade back in
+      cardContainer.classList.remove('switching');
+    }, 150);
+  }
+
+  // Pick a Random Card from the List
+  function drawRandomCard() {
+    let nextIndex = Math.floor(Math.random() * cardsList.length);
+    // Ensure we pick a different card if possible
+    if (cardsList.length > 1 && nextIndex === currentCardIndex) {
+      nextIndex = (currentCardIndex + 1) % cardsList.length;
+    }
+    loadCard(nextIndex);
+    const rect = cardContainer.getBoundingClientRect();
+    triggerWebBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  }
+
+  // Initial Load with Random Card Selection
+  loadCard(currentCardIndex);
+
+  // Toggle Single Card Flip
+  function toggleCardFlip(e) {
+    isFlipped = !isFlipped;
 
     // Toggle CSS class
     flipCard.classList.toggle('flipped', isFlipped);
 
-    // Audio & Web Burst
-    playWebThwipSound(1400 + parseInt(id, 10) * 100);
-    const rect = cardElement.getBoundingClientRect();
+    // Sound & Particle Burst
+    playWebThwipSound(1400);
+    const rect = cardContainer.getBoundingClientRect();
     const clickX = e && e.clientX ? e.clientX : rect.left + rect.width / 2;
     const clickY = e && e.clientY ? e.clientY : rect.top + rect.height / 2;
     triggerWebBurst(clickX, clickY);
 
-    // Update bottom label text
-    if (sideLabel) {
-      sideLabel.textContent = isFlipped ? 'SIDE B (BACK)' : 'SIDE A (FRONT)';
-      sideLabel.style.color = isFlipped ? 'var(--spider-red)' : 'var(--text-muted)';
-    }
+    updateStatusBadge();
   }
 
-  // Bind click & hover events to each split view card
-  cards.forEach(card => {
-    const id = card.getAttribute('data-id');
-    const flipCard = document.getElementById(`flipCard-${id}`);
-
-    // Click handler
-    card.addEventListener('click', (e) => {
-      toggleCardFlip(card, e);
-    });
-
-    // Keyboard accessibility
-    card.addEventListener('keydown', (e) => {
-      if (e.key === ' ' || e.key === 'Enter') {
-        e.preventDefault();
-        toggleCardFlip(card);
-      }
-    });
-
-    // 3D Perspective Tilt Tracking per card
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-
-      const rotateX = ((y - centerY) / centerY) * -12;
-      const rotateY = ((x - centerX) / centerX) * 12;
-
-      const isFlipped = cardStates[id];
-      const baseRotationY = isFlipped ? 180 : 0;
-      const finalRotateY = baseRotationY + rotateY;
-
-      flipCard.style.transform = `rotateY(${finalRotateY}deg) rotateX(${rotateX}deg) scale(1.03)`;
-    });
-
-    card.addEventListener('mouseleave', () => {
-      const isFlipped = cardStates[id];
-      const baseRotationY = isFlipped ? 180 : 0;
-      flipCard.style.transform = `rotateY(${baseRotationY}deg) rotateX(0deg) scale(1)`;
-    });
+  // Event Listeners
+  drawRandomBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    drawRandomCard();
   });
 
-  // Flip All Cards Toggle Button
-  const flipAllBtn = document.getElementById('flipAllBtn');
-  let allFlippedState = false;
-
-  flipAllBtn.addEventListener('click', (e) => {
+  secondaryRandomBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    allFlippedState = !allFlippedState;
+    drawRandomCard();
+  });
 
-    cards.forEach((card, index) => {
-      setTimeout(() => {
-        const id = card.getAttribute('data-id');
-        if (cardStates[id] !== allFlippedState) {
-          toggleCardFlip(card);
-        }
-      }, index * 100); // Staggered flip animation!
-    });
+  cardListSelect.addEventListener('change', (e) => {
+    const selectedIdx = parseInt(e.target.value, 10);
+    loadCard(selectedIdx);
+  });
+
+  cardContainer.addEventListener('click', (e) => {
+    toggleCardFlip(e);
+  });
+
+  flipPromptBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleCardFlip(e);
+  });
+
+  // Keyboard Navigation (Space/Enter to flip, 'r' or 'R' or Arrow keys to pick random)
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'r' || e.key === 'R') {
+      drawRandomCard();
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      if (document.activeElement === cardContainer || document.activeElement === document.body) {
+        e.preventDefault();
+        toggleCardFlip();
+      }
+    }
+  });
+
+  // Interactive 3D Perspective Tilt Tracking
+  cardContainer.addEventListener('mousemove', (e) => {
+    const rect = cardContainer.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -12;
+    const rotateY = ((x - centerX) / centerX) * 12;
+
+    const baseRotationY = isFlipped ? 180 : 0;
+    const finalRotateY = baseRotationY + rotateY;
+
+    flipCard.style.transform = `rotateY(${finalRotateY}deg) rotateX(${rotateX}deg) scale(1.02)`;
+  });
+
+  cardContainer.addEventListener('mouseleave', () => {
+    const baseRotationY = isFlipped ? 180 : 0;
+    flipCard.style.transform = `rotateY(${baseRotationY}deg) rotateX(0deg) scale(1)`;
   });
 
   // Sound Toggle Button

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SPIDER-VERSE MINIMAL 3D SPLIT VIEW CARD STYLESHEET
+   SPIDER-VERSE MINIMAL RANDOM 3D FLIP CARD STYLESHEET
    ========================================================================== */
 
 :root {
@@ -25,8 +25,8 @@
   --radius-md: 16px;
   --radius-lg: 24px;
   
-  --shadow-card: 0 20px 45px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 102, 255, 0.2);
-  --shadow-hover: 0 30px 55px -12px rgba(0, 0, 0, 0.9), 0 0 35px rgba(230, 0, 18, 0.4);
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 102, 255, 0.2);
+  --shadow-hover: 0 35px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(230, 0, 18, 0.4);
   
   /* Transitions */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -99,7 +99,7 @@ body {
 .web-corner.top-right { top: 0; right: 0; }
 
 /* ==========================================================================
-   MINIMAL NAVBAR
+   MINIMAL NAVBAR & CONTROLS
    ========================================================================== */
 .navbar {
   width: 100%;
@@ -146,7 +146,33 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
+}
+
+/* Card Select Dropdown */
+.card-select-dropdown {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(20, 25, 38, 0.85);
+  color: var(--accent-cyan);
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(8px);
+  transition: var(--transition-fast);
+}
+
+.card-select-dropdown:hover, .card-select-dropdown:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+}
+
+.card-select-dropdown option {
+  background: #0B0E14;
+  color: #FFF;
 }
 
 .action-btn {
@@ -171,14 +197,21 @@ body {
   box-shadow: 0 0 15px var(--spider-red-glow);
 }
 
-.mode-btn:hover {
-  background: rgba(0, 240, 255, 0.2);
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+.draw-btn {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+  color: var(--accent-gold);
+}
+
+.draw-btn:hover {
+  background: rgba(255, 215, 0, 0.3);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  color: #FFF;
 }
 
 /* ==========================================================================
-   MAIN CARD STAGE: SPLIT VIEW LAYOUT
+   MAIN CARD STAGE & 3D FLIP MECHANICS
    ========================================================================== */
 .card-stage {
   display: flex;
@@ -187,7 +220,7 @@ body {
   justify-content: center;
   gap: 1.5rem;
   flex: 1;
-  padding: 2rem 1.5rem;
+  padding: 1.5rem;
   width: 100%;
 }
 
@@ -202,6 +235,7 @@ body {
   border-radius: 50px;
   backdrop-filter: blur(8px);
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+  transition: all 0.3s ease;
 }
 
 .pulse-dot {
@@ -220,74 +254,35 @@ body {
 
 .status-text {
   font-family: var(--font-heading);
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 1.5px;
   color: var(--accent-cyan);
   text-transform: uppercase;
 }
 
-/* Split Grid of Cards */
-.cards-split-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 2.2rem;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Spider Card Container */
-.spider-card {
-  perspective: 1000px;
-  width: min(280px, 84vw);
+/* 3D Card Container */
+.card-container {
+  perspective: 1200px;
+  width: min(390px, 86vw);
   aspect-ratio: 1 / 1.4;
   cursor: pointer;
   outline: none;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
 }
 
-.spider-card:focus-visible .card-face {
+.card-container.switching {
+  opacity: 0;
+  transform: scale(0.88) rotate(-4deg) translateY(15px);
+}
+
+.card-container:focus-visible .card-face {
   border-color: var(--accent-cyan);
   box-shadow: 0 0 25px var(--accent-cyan);
 }
 
-/* Card Number Tag Pill */
-.card-tag {
-  position: absolute;
-  top: -12px;
-  z-index: 5;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-  padding: 0.2rem 0.8rem;
-  background: var(--spider-red);
-  color: #FFF;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px var(--spider-red-glow);
-  pointer-events: none;
-}
-
-/* Card Bottom Side Label */
-.card-side-label {
-  position: absolute;
-  bottom: -28px;
-  font-family: var(--font-heading);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  transition: color 0.3s;
-  pointer-events: none;
-}
-
-/* 3D Flip Card Inner Wrapper */
+/* Flip Card Inner Wrapper */
 .flip-card {
   width: 100%;
   height: 100%;
@@ -310,15 +305,15 @@ body {
   height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.16);
+  border: 2px solid rgba(255, 255, 255, 0.18);
   background-color: var(--bg-card);
   box-shadow: var(--shadow-card);
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.spider-card:hover .card-face {
+.card-container:hover .card-face {
   border-color: rgba(230, 0, 18, 0.6);
   box-shadow: var(--shadow-hover);
 }
@@ -337,7 +332,7 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 16px;
+  border-radius: 18px;
 }
 
 /* Dynamic Glass Shine Effect */
@@ -363,17 +358,94 @@ body {
 .card-border-glow {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   pointer-events: none;
   z-index: 3;
+}
+
+/* Action Controls */
+.action-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Flip Prompt Button */
+.flip-prompt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 1.8rem;
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-white);
+  background: linear-gradient(135deg, var(--spider-red), #B3000E);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px var(--spider-red-glow);
+  transition: all var(--transition-fast);
+}
+
+.flip-prompt-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 15px 30px rgba(230, 0, 18, 0.6);
+  background: linear-gradient(135deg, #FF1A2D, var(--spider-red));
+}
+
+.flip-prompt-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.flip-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.5s ease;
+}
+
+.flip-prompt-btn:hover .flip-icon {
+  transform: rotate(180deg);
+}
+
+/* Secondary Random Draw Button */
+.secondary-draw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  background: rgba(20, 25, 38, 0.8);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 50px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all var(--transition-fast);
+}
+
+.secondary-draw-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: var(--accent-gold);
+  color: #FFF;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
 }
 
 /* Minimal Footer */
 .minimal-footer {
   width: 100%;
   text-align: center;
-  padding: 1.2rem;
+  padding: 1rem;
   font-family: var(--font-heading);
   font-size: 0.75rem;
   font-weight: 600;
@@ -382,18 +454,21 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Responsive Scaling */
-@media (max-width: 640px) {
+/* Mobile Responsiveness */
+@media (max-width: 580px) {
   .navbar {
     padding: 1rem 1.2rem;
+    flex-wrap: wrap;
+    gap: 0.8rem;
   }
   .logo-text {
     font-size: 1.4rem;
   }
-  .spider-card {
-    width: 82vw;
+  .card-container {
+    width: 88vw;
   }
-  .cards-split-grid {
-    gap: 3rem;
+  .flip-prompt-btn, .secondary-draw-btn {
+    padding: 0.65rem 1.3rem;
+    font-size: 0.82rem;
   }
 }
