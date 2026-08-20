@@ -887,18 +887,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // First user interaction fallback to start background audio
-  function handleFirstMusicGesture() {
-    if (hasUserInteractedForMusic) return;
-    hasUserInteractedForMusic = true;
+  // Automatic Playback Engine with Seamless Gesture Unlock
+  function attemptAggressiveAutoplay() {
+    if (!bgThemeAudio) return;
+    initAudioContext();
+    bgThemeAudio.volume = 0.65;
 
-    // Clean up one-time listeners
-    document.removeEventListener('pointerdown', handleFirstMusicGesture);
-    document.removeEventListener('touchstart', handleFirstMusicGesture);
-    document.removeEventListener('keydown', handleFirstMusicGesture);
+    // 1. Direct unmuted playback attempt
+    const playPromise = bgThemeAudio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          updateMusicUI(true);
+        })
+        .catch(() => {
+          // 2. If blocked by strict browser policy, unlock on ANY first movement/interaction
+          updateMusicUI(false);
 
-    if (bgThemeAudio && bgThemeAudio.paused && !musicToggleBtn.classList.contains('manual-paused')) {
-      playCurrentTrack();
+          const unlockAudio = () => {
+            if (musicToggleBtn && musicToggleBtn.classList.contains('manual-paused')) return;
+            initAudioContext();
+            bgThemeAudio.volume = 0.65;
+            bgThemeAudio.play()
+              .then(() => updateMusicUI(true))
+              .catch(() => {});
+
+            // Cleanup listeners
+            ['click', 'pointerdown', 'mousedown', 'touchstart', 'keydown', 'scroll', 'mousemove', 'wheel'].forEach(evt => {
+              document.removeEventListener(evt, unlockAudio);
+              window.removeEventListener(evt, unlockAudio);
+            });
+          };
+
+          ['click', 'pointerdown', 'mousedown', 'touchstart', 'keydown', 'scroll', 'mousemove', 'wheel'].forEach(evt => {
+            document.addEventListener(evt, unlockAudio, { passive: true, once: true });
+            window.addEventListener(evt, unlockAudio, { passive: true, once: true });
+          });
+        });
     }
   }
 
@@ -911,13 +936,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Register first gesture listeners for autoplay fallback
-  document.addEventListener('pointerdown', handleFirstMusicGesture, { once: true });
-  document.addEventListener('touchstart', handleFirstMusicGesture, { once: true });
-  document.addEventListener('keydown', handleFirstMusicGesture, { once: true });
-
-  // Initial attempt on page load
-  playCurrentTrack();
+  // Attempt automatic launch immediately on load
+  attemptAggressiveAutoplay();
 
   // ==========================================================================
   // REAL-TIME GLOWING NEON AUDIO SPECTRUM EQUALIZER VISUALIZER
