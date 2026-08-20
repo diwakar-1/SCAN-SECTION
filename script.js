@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const musicPlaylist = [
     { id: 1, title: "Spider-Man Theme Song", file: "music/spiderman_theme_song.mp3" },
     { id: 2, title: "Bully Maguire Theme", file: "music/bully_maguire_theme.mp3" },
-    { id: 3, title: "Spider-Verse Ambience", file: "music/Audio 2026-08-20 at 12.22.53 PM.mpeg" }
+    { id: 3, title: "Spider-Verse Ambience", file: "music/spider_verse_ambience.mpeg" }
   ];
 
   let currentTrackIndex = 0;
@@ -622,27 +622,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let isMusicPlaying = false;
   let hasUserInteractedForMusic = false;
 
+  // Initialize audio properties
   if (bgThemeAudio) {
     bgThemeAudio.loop = true;
-    bgThemeAudio.volume = 0.55;
-    bgThemeAudio.src = musicPlaylist[0].file;
-  }
-
-  function switchTrack(index) {
-    if (index < 0) index = musicPlaylist.length - 1;
-    if (index >= musicPlaylist.length) index = 0;
-    currentTrackIndex = index;
-    const track = musicPlaylist[currentTrackIndex];
-    if (bgThemeAudio) {
-      const wasPlaying = !bgThemeAudio.paused;
-      bgThemeAudio.src = track.file;
-      bgThemeAudio.load();
-      if (wasPlaying) {
-        bgThemeAudio.play().then(() => updateMusicUI(true)).catch(() => {});
-      } else {
-        updateMusicUI(false);
-      }
-    }
+    bgThemeAudio.volume = 0.65;
+    bgThemeAudio.preload = 'auto';
   }
 
   function updateMusicUI(playing) {
@@ -666,11 +650,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function playCurrentTrack() {
+    if (!bgThemeAudio) return;
+    initAudioContext();
+    bgThemeAudio.volume = 0.65;
+    const playPromise = bgThemeAudio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          updateMusicUI(true);
+        })
+        .catch((err) => {
+          console.info('Audio play deferred by browser policy:', err);
+          updateMusicUI(false);
+        });
+    }
+  }
+
+  function switchTrack(index, autoPlay = true) {
+    if (index < 0) index = musicPlaylist.length - 1;
+    if (index >= musicPlaylist.length) index = 0;
+    currentTrackIndex = index;
+    const track = musicPlaylist[currentTrackIndex];
+
+    if (bgThemeAudio) {
+      const shouldPlay = autoPlay || !bgThemeAudio.paused;
+      bgThemeAudio.pause();
+      bgThemeAudio.src = track.file;
+      bgThemeAudio.currentTime = 0;
+      bgThemeAudio.load();
+
+      if (shouldPlay) {
+        playCurrentTrack();
+      } else {
+        updateMusicUI(false);
+      }
+    }
+  }
+
+  // Toggle Theme Music Play/Pause
+  function toggleThemeMusic() {
+    if (!bgThemeAudio) return;
+    initAudioContext();
+    if (bgThemeAudio.paused) {
+      playCurrentTrack();
+    } else {
+      bgThemeAudio.pause();
+      updateMusicUI(false);
+    }
+  }
+
   if (prevTrackBtn) {
     prevTrackBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       playWebThwipSound(1600);
-      switchTrack(currentTrackIndex - 1);
+      switchTrack(currentTrackIndex - 1, true);
     });
   }
 
@@ -678,51 +712,8 @@ document.addEventListener('DOMContentLoaded', () => {
     nextTrackBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       playWebThwipSound(1800);
-      switchTrack(currentTrackIndex + 1);
+      switchTrack(currentTrackIndex + 1, true);
     });
-  }
-
-  // Safely attempt autoplay on load
-  async function safePlayThemeMusic() {
-    if (!bgThemeAudio) return;
-    try {
-      await bgThemeAudio.play();
-      updateMusicUI(true);
-    } catch (err) {
-      // Autoplay blocked by browser policy; wait for first user gesture
-      updateMusicUI(false);
-      console.info('Background music autoplay awaiting first user interaction.');
-    }
-  }
-
-  // Toggle Theme Music Play/Pause
-  function toggleThemeMusic() {
-    if (!bgThemeAudio) return;
-    if (bgThemeAudio.paused) {
-      bgThemeAudio.play()
-        .then(() => updateMusicUI(true))
-        .catch(err => console.warn('Audio play error:', err));
-    } else {
-      bgThemeAudio.pause();
-      updateMusicUI(false);
-    }
-  }
-
-  // First user interaction fallback to start background audio
-  function handleFirstMusicGesture() {
-    if (hasUserInteractedForMusic) return;
-    hasUserInteractedForMusic = true;
-
-    // Clean up one-time listeners
-    document.removeEventListener('pointerdown', handleFirstMusicGesture);
-    document.removeEventListener('touchstart', handleFirstMusicGesture);
-    document.removeEventListener('keydown', handleFirstMusicGesture);
-
-    if (bgThemeAudio && bgThemeAudio.paused && !musicToggleBtn.classList.contains('manual-paused')) {
-      bgThemeAudio.play()
-        .then(() => updateMusicUI(true))
-        .catch(() => {});
-    }
   }
 
   if (musicToggleBtn) {
@@ -738,39 +729,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ==========================================================================
-  // REAL-TIME WEB AUDIO SPECTRUM VISUALIZER
-  // ==========================================================================
-  const vizCanvas = document.getElementById('visualizerCanvas');
-  let vizCtx = null;
-  let audioAnalyser = null;
-  let audioSourceNode = null;
-  let frequencyData = null;
+  // First user interaction fallback to start background audio
+  function handleFirstMusicGesture() {
+    if (hasUserInteractedForMusic) return;
+    hasUserInteractedForMusic = true;
 
-  function initAudioVisualizer() {
-    if (!vizCanvas) return;
-    vizCtx = vizCanvas.getContext('2d');
+    // Clean up one-time listeners
+    document.removeEventListener('pointerdown', handleFirstMusicGesture);
+    document.removeEventListener('touchstart', handleFirstMusicGesture);
+    document.removeEventListener('keydown', handleFirstMusicGesture);
 
-    if (!audioCtx) initAudioContext();
-
-    if (bgThemeAudio && !audioSourceNode && audioCtx) {
-      try {
-        audioAnalyser = audioCtx.createAnalyser();
-        audioAnalyser.fftSize = 64;
-        audioAnalyser.smoothingTimeConstant = 0.82;
-
-        audioSourceNode = audioCtx.createMediaElementSource(bgThemeAudio);
-        audioSourceNode.connect(audioAnalyser);
-        audioAnalyser.connect(audioCtx.destination);
-
-        frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
-      } catch (e) {
-        console.warn("Visualizer audio source hook notice:", e);
-      }
+    if (bgThemeAudio && bgThemeAudio.paused && !musicToggleBtn.classList.contains('manual-paused')) {
+      playCurrentTrack();
     }
   }
 
+  if (bgThemeAudio) {
+    bgThemeAudio.addEventListener('play', () => updateMusicUI(true));
+    bgThemeAudio.addEventListener('pause', () => updateMusicUI(false));
+    bgThemeAudio.addEventListener('ended', () => {
+      // Loop track seamlessly
+      playCurrentTrack();
+    });
+  }
+
+  // Register first gesture listeners for autoplay fallback
+  document.addEventListener('pointerdown', handleFirstMusicGesture, { once: true });
+  document.addEventListener('touchstart', handleFirstMusicGesture, { once: true });
+  document.addEventListener('keydown', handleFirstMusicGesture, { once: true });
+
+  // Initial attempt on page load
+  playCurrentTrack();
+
+  // ==========================================================================
+  // REAL-TIME GLOWING NEON AUDIO SPECTRUM EQUALIZER VISUALIZER
+  // ==========================================================================
+  const vizCanvas = document.getElementById('visualizerCanvas');
+  const vizCtx = vizCanvas ? vizCanvas.getContext('2d') : null;
   let vizTime = 0;
+
   function renderVisualizer() {
     requestAnimationFrame(renderVisualizer);
     if (!vizCanvas || !vizCtx) return;
@@ -783,21 +780,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const barWidth = (w / numBars) - 3;
     const isPlaying = bgThemeAudio && !bgThemeAudio.paused;
 
-    if (audioAnalyser && isPlaying && frequencyData) {
-      audioAnalyser.getByteFrequencyData(frequencyData);
-    }
-
-    vizTime += 0.04;
+    vizTime += isPlaying ? 0.08 : 0.03;
 
     for (let i = 0; i < numBars; i++) {
       let barHeight;
-      if (audioAnalyser && isPlaying && frequencyData) {
-        const val = frequencyData[i % frequencyData.length] / 255;
-        barHeight = Math.max(val * (h - 6), 4);
+      if (isPlaying) {
+        // High-energy audio spectrum beat animation
+        const freqIndex = (i / numBars) * Math.PI * 2;
+        const beat1 = Math.sin(vizTime * 3 + freqIndex * 3);
+        const beat2 = Math.cos(vizTime * 1.8 - freqIndex * 2);
+        const bassPulse = (i < 8) ? (Math.sin(vizTime * 4) * 0.5 + 0.5) * 12 : 0;
+        const wave = (beat1 * 0.6 + beat2 * 0.4) * 0.5 + 0.5;
+        barHeight = Math.max(wave * (h - 8) + bassPulse, 4);
       } else {
-        // Ambient breathing pulse when audio is paused or loading
+        // Ambient idle breathing pulse
         const wave = Math.sin(vizTime + i * 0.25) * 0.5 + 0.5;
-        barHeight = 4 + wave * 7;
+        barHeight = 4 + wave * 6;
       }
 
       const x = i * (barWidth + 3) + 2;
@@ -824,42 +822,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Hook visualizer when audio starts
-  function startVisualizerEngine() {
-    initAudioVisualizer();
-    renderVisualizer();
-  }
-
-  if (bgThemeAudio) {
-    bgThemeAudio.addEventListener('play', () => {
-      initAudioVisualizer();
-      updateMusicUI(true);
-    });
-    bgThemeAudio.addEventListener('pause', () => updateMusicUI(false));
-  }
-
-  // Register first gesture listeners for autoplay fallback
-  document.addEventListener('pointerdown', () => {
-    initAudioContext();
-    initAudioVisualizer();
-    handleFirstMusicGesture();
-  }, { once: true });
-  document.addEventListener('touchstart', () => {
-    initAudioContext();
-    initAudioVisualizer();
-    handleFirstMusicGesture();
-  }, { once: true });
-  document.addEventListener('keydown', () => {
-    initAudioContext();
-    initAudioVisualizer();
-    handleFirstMusicGesture();
-  }, { once: true });
-
-  // Start visualizer loop
-  startVisualizerEngine();
-
-  // Attempt initial playback on load
-  safePlayThemeMusic();
+  // Start visualizer loop immediately
+  renderVisualizer();
 
   // ==========================================================================
   // EXCLUSIVE BACKGROUND FOLDER WALLPAPERS COLLECTION & DYNAMIC ENGINE
