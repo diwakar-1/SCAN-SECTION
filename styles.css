@@ -770,6 +770,14 @@ body {
   margin-top: 0.3rem;
 }
 
+.visualizer-header-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .visualizer-label-wrap {
   display: flex;
   align-items: center;
@@ -777,8 +785,42 @@ body {
   font-family: var(--font-heading);
   font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   color: var(--accent-cyan);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.track-nav-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-white);
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-nav-btn:hover {
+  background: var(--spider-blue-bright);
+  border-color: #FFF;
+  transform: scale(1.1);
+}
+
+.track-nav-btn:active {
+  transform: scale(0.95);
 }
 
 .viz-dot {
@@ -788,6 +830,7 @@ body {
   background-color: var(--spider-red);
   box-shadow: 0 0 8px var(--spider-red);
   animation: pulseDot 1s infinite;
+  flex-shrink: 0;
 }
 
 .visualizer-canvas {

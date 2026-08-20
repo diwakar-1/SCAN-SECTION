@@ -193,11 +193,17 @@
       </button>
     </div>
 
-    <!-- Glowing Neon Audio Visualizer Bar -->
+    <!-- Glowing Neon Audio Visualizer Bar with Track Controls -->
     <div class="audio-visualizer-wrap" id="audioVisualizerWrap">
-      <div class="visualizer-label-wrap">
-        <span class="viz-dot"></span>
-        <span class="viz-label">LIVE AUDIO SPECTRUM</span>
+      <div class="visualizer-header-row">
+        <div class="visualizer-label-wrap">
+          <span class="viz-dot"></span>
+          <span class="viz-label" id="currentTrackLabel">TRACK 01 • SPIDER-MAN THEME SONG</span>
+        </div>
+        <div class="track-controls">
+          <button class="track-nav-btn" id="prevTrackBtn" title="Previous Music Track (Press P)">⏮</button>
+          <button class="track-nav-btn" id="nextTrackBtn" title="Next Music Track (Press N)">⏭</button>
+        </div>
       </div>
       <canvas id="visualizerCanvas" class="visualizer-canvas" width="600" height="42"></canvas>
     </div>

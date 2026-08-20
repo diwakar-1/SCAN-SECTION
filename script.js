@@ -615,6 +615,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const bgThemeAudio = document.getElementById('bgThemeAudio');
   const musicToggleBtn = document.getElementById('musicToggleBtn');
   const musicBtnText = document.getElementById('musicBtnText');
+  const currentTrackLabel = document.getElementById('currentTrackLabel');
+  const prevTrackBtn = document.getElementById('prevTrackBtn');
+  const nextTrackBtn = document.getElementById('nextTrackBtn');
 
   let isMusicPlaying = false;
   let hasUserInteractedForMusic = false;
@@ -636,14 +639,19 @@ document.addEventListener('DOMContentLoaded', () => {
       bgThemeAudio.load();
       if (wasPlaying) {
         bgThemeAudio.play().then(() => updateMusicUI(true)).catch(() => {});
+      } else {
+        updateMusicUI(false);
       }
     }
   }
 
   function updateMusicUI(playing) {
     isMusicPlaying = playing;
+    const track = musicPlaylist[currentTrackIndex];
+    if (currentTrackLabel && track) {
+      currentTrackLabel.textContent = `TRACK 0${currentTrackIndex + 1} • ${track.title.toUpperCase()}`;
+    }
     if (musicToggleBtn) {
-      const track = musicPlaylist[currentTrackIndex];
       if (playing) {
         musicToggleBtn.classList.remove('is-paused');
         musicToggleBtn.classList.add('is-playing');
@@ -656,6 +664,22 @@ document.addEventListener('DOMContentLoaded', () => {
         musicToggleBtn.title = `Music Paused (Click to Play, Press M)`;
       }
     }
+  }
+
+  if (prevTrackBtn) {
+    prevTrackBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playWebThwipSound(1600);
+      switchTrack(currentTrackIndex - 1);
+    });
+  }
+
+  if (nextTrackBtn) {
+    nextTrackBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playWebThwipSound(1800);
+      switchTrack(currentTrackIndex + 1);
+    });
   }
 
   // Safely attempt autoplay on load
@@ -1108,6 +1132,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (e.key === 'm' || e.key === 'M') {
       if (document.activeElement.tagName !== 'INPUT') {
         toggleThemeMusic();
+      }
+    } else if (e.key === 'n' || e.key === 'N') {
+      if (document.activeElement.tagName !== 'INPUT') {
+        switchTrack(currentTrackIndex + 1);
+      }
+    } else if (e.key === 'p' || e.key === 'P') {
+      if (document.activeElement.tagName !== 'INPUT') {
+        switchTrack(currentTrackIndex - 1);
       }
     }
   });
