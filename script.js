@@ -1,18 +1,15 @@
 /* ==========================================================================
-   SPIDER-VERSE MINIMAL 3D MULTI-CARD INTERACTION & PHYSICS
+   SPIDER-VERSE MINIMAL 3D SPLIT VIEW CARD INTERACTION & PHYSICS
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Card Collection Data
-  const cardsCollection = [
-    { id: 1, name: "CARD 01", front: "front_image.png", back: "back_image.png" },
-    { id: 2, name: "CARD 02", front: "front 2.png", back: "back 2.png" },
-    { id: 3, name: "CARD 03", front: "front 3.png", back: "back 3.png" },
-    { id: 4, name: "CARD 04", front: "front 4.png", back: "back 4.png" }
-  ];
-
-  let currentCardIndex = 0;
-  let isFlipped = false;
+  // Track Flip State per Card ID (1, 2, 3, 4)
+  const cardStates = {
+    1: false,
+    2: false,
+    3: false,
+    4: false
+  };
 
   // Sound FX State
   let soundEnabled = true;
@@ -240,168 +237,96 @@ document.addEventListener('DOMContentLoaded', () => {
   animateCanvas();
 
   // ==========================================================================
-  // CARD COLLECTION SWITCHER & 3D FLIP MECHANICS
+  // SPLIT VIEW CARD FLIP & 3D TILT MECHANICS
   // ==========================================================================
-  const cardContainer = document.getElementById('cardContainer');
-  const flipCard = document.getElementById('flipCard');
-  const frontImg = document.getElementById('frontImg');
-  const backImg = document.getElementById('backImg');
-  const flipPromptBtn = document.getElementById('flipPromptBtn');
-  const statusText = document.getElementById('statusText');
-  const statusBadge = document.getElementById('cardStatusBadge');
-  const prevCardBtn = document.getElementById('prevCardBtn');
-  const nextCardBtn = document.getElementById('nextCardBtn');
-  const tabBtns = document.querySelectorAll('.selector-tab');
+  const cards = document.querySelectorAll('.spider-card');
 
-  // Update Status Display Badge
-  function updateStatusBadge() {
-    const cardData = cardsCollection[currentCardIndex];
-    if (isFlipped) {
-      statusText.textContent = `${cardData.name} • SIDE B (BACK SPECS)`;
-      statusBadge.style.borderColor = 'rgba(230, 0, 18, 0.4)';
-      statusBadge.style.boxShadow = '0 0 15px rgba(230, 0, 18, 0.2)';
-    } else {
-      statusText.textContent = `${cardData.name} • SIDE A (FRONT COVER)`;
-      statusBadge.style.borderColor = 'rgba(0, 240, 255, 0.3)';
-      statusBadge.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.15)';
-    }
-  }
+  // Toggle Flip State for a Single Card
+  function toggleCardFlip(cardElement, e) {
+    const id = cardElement.getAttribute('data-id');
+    const flipCard = document.getElementById(`flipCard-${id}`);
+    const sideLabel = cardElement.querySelector('.card-side-label');
 
-  // Switch Active Card with Smooth Transition
-  function selectCard(newIndex) {
-    if (newIndex < 0) newIndex = cardsCollection.length - 1;
-    if (newIndex >= cardsCollection.length) newIndex = 0;
-    if (newIndex === currentCardIndex && !isFlipped) return;
-
-    currentCardIndex = newIndex;
-    isFlipped = false;
-
-    // Trigger visual switch animation
-    cardContainer.classList.add('switching');
-    playWebThwipSound(1800);
-
-    setTimeout(() => {
-      // Reset flip rotation
-      flipCard.classList.remove('flipped');
-      flipCard.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
-
-      // Update image sources
-      const data = cardsCollection[currentCardIndex];
-      frontImg.src = data.front;
-      backImg.src = data.back;
-
-      // Update active tab buttons
-      tabBtns.forEach((btn, idx) => {
-        btn.classList.toggle('active', idx === currentCardIndex);
-      });
-
-      updateStatusBadge();
-
-      // Fade back in
-      cardContainer.classList.remove('switching');
-    }, 150);
-  }
-
-  // Toggle Card Flip
-  function toggleCardFlip(e) {
-    isFlipped = !isFlipped;
+    cardStates[id] = !cardStates[id];
+    const isFlipped = cardStates[id];
 
     // Toggle CSS class
     flipCard.classList.toggle('flipped', isFlipped);
 
-    // Sound & Web Burst
-    playWebThwipSound(1400);
-    const rect = cardContainer.getBoundingClientRect();
+    // Audio & Web Burst
+    playWebThwipSound(1400 + parseInt(id, 10) * 100);
+    const rect = cardElement.getBoundingClientRect();
     const clickX = e && e.clientX ? e.clientX : rect.left + rect.width / 2;
     const clickY = e && e.clientY ? e.clientY : rect.top + rect.height / 2;
     triggerWebBurst(clickX, clickY);
 
-    updateStatusBadge();
+    // Update bottom label text
+    if (sideLabel) {
+      sideLabel.textContent = isFlipped ? 'SIDE B (BACK)' : 'SIDE A (FRONT)';
+      sideLabel.style.color = isFlipped ? 'var(--spider-red)' : 'var(--text-muted)';
+    }
   }
 
-  // Selector Tab Click Listeners
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.getAttribute('data-index'), 10);
-      selectCard(index);
+  // Bind click & hover events to each split view card
+  cards.forEach(card => {
+    const id = card.getAttribute('data-id');
+    const flipCard = document.getElementById(`flipCard-${id}`);
+
+    // Click handler
+    card.addEventListener('click', (e) => {
+      toggleCardFlip(card, e);
+    });
+
+    // Keyboard accessibility
+    card.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        toggleCardFlip(card);
+      }
+    });
+
+    // 3D Perspective Tilt Tracking per card
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = ((y - centerY) / centerY) * -12;
+      const rotateY = ((x - centerX) / centerX) * 12;
+
+      const isFlipped = cardStates[id];
+      const baseRotationY = isFlipped ? 180 : 0;
+      const finalRotateY = baseRotationY + rotateY;
+
+      flipCard.style.transform = `rotateY(${finalRotateY}deg) rotateX(${rotateX}deg) scale(1.03)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      const isFlipped = cardStates[id];
+      const baseRotationY = isFlipped ? 180 : 0;
+      flipCard.style.transform = `rotateY(${baseRotationY}deg) rotateX(0deg) scale(1)`;
     });
   });
 
-  // Navigation Buttons
-  prevCardBtn.addEventListener('click', (e) => {
+  // Flip All Cards Toggle Button
+  const flipAllBtn = document.getElementById('flipAllBtn');
+  let allFlippedState = false;
+
+  flipAllBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    selectCard(currentCardIndex - 1);
-  });
+    allFlippedState = !allFlippedState;
 
-  nextCardBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    selectCard(currentCardIndex + 1);
-  });
-
-  // Card & Prompt Button Clicks
-  cardContainer.addEventListener('click', (e) => {
-    toggleCardFlip(e);
-  });
-
-  flipPromptBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleCardFlip(e);
-  });
-
-  // Keyboard Navigation & Accessibility
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') {
-      selectCard(currentCardIndex - 1);
-    } else if (e.key === 'ArrowRight') {
-      selectCard(currentCardIndex + 1);
-    } else if (e.key === ' ' || e.key === 'Enter') {
-      if (document.activeElement === cardContainer || document.activeElement === document.body) {
-        e.preventDefault();
-        toggleCardFlip();
-      }
-    }
-  });
-
-  // Touch Swipe Gesture Navigation
-  let touchStartX = 0;
-  cardContainer.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
-
-  cardContainer.addEventListener('touchend', (e) => {
-    const touchEndX = e.changedTouches[0].screenX;
-    const diffX = touchEndX - touchStartX;
-    if (Math.abs(diffX) > 50) {
-      if (diffX < 0) {
-        selectCard(currentCardIndex + 1);
-      } else {
-        selectCard(currentCardIndex - 1);
-      }
-    }
-  }, { passive: true });
-
-  // Interactive 3D Perspective Tilt Tracking
-  cardContainer.addEventListener('mousemove', (e) => {
-    const rect = cardContainer.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -12;
-    const rotateY = ((x - centerX) / centerX) * 12;
-
-    const baseRotationY = isFlipped ? 180 : 0;
-    const finalRotateY = baseRotationY + rotateY;
-
-    flipCard.style.transform = `rotateY(${finalRotateY}deg) rotateX(${rotateX}deg) scale(1.02)`;
-  });
-
-  cardContainer.addEventListener('mouseleave', () => {
-    const baseRotationY = isFlipped ? 180 : 0;
-    flipCard.style.transform = `rotateY(${baseRotationY}deg) rotateX(0deg) scale(1)`;
+    cards.forEach((card, index) => {
+      setTimeout(() => {
+        const id = card.getAttribute('data-id');
+        if (cardStates[id] !== allFlippedState) {
+          toggleCardFlip(card);
+        }
+      }, index * 100); // Staggered flip animation!
+    });
   });
 
   // Sound Toggle Button

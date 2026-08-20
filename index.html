@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spider-Verse Dossier Vault | Interactive 3D Card Collection</title>
-  <meta name="description" content="Minimalist 3D interactive Spider-Verse flip card collection featuring front and back hero dossier views, multi-card switcher, audio feedback, and ambient web particle effects.">
+  <title>Spider-Verse Dossier Vault | Split 3D Card Collection</title>
+  <meta name="description" content="Minimalist 3D interactive Spider-Verse flip card collection displayed side-by-side in a split layout featuring front and back hero dossier views.">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,6 +54,9 @@
     </div>
 
     <div class="header-actions">
+      <button id="flipAllBtn" class="action-btn mode-btn" title="Flip All Cards Simultaneously">
+        <span class="btn-text">🔄 FLIP ALL CARDS</span>
+      </button>
       <button id="soundToggleBtn" class="action-btn icon-btn" title="Toggle Web Sound Effects">
         <span class="sound-icon">🔊</span>
         <span class="btn-text">THWIP FX: ON</span>
@@ -61,72 +64,95 @@
     </div>
   </header>
 
-  <!-- Main Central Card Stage -->
+  <!-- Main Central Card Stage: Split View -->
   <main class="card-stage">
     
-    <!-- Top Card Selector Pills -->
-    <div class="card-selector-tabs" id="cardSelectorTabs">
-      <button class="selector-tab active" data-index="0">CARD 01</button>
-      <button class="selector-tab" data-index="1">CARD 02</button>
-      <button class="selector-tab" data-index="2">CARD 03</button>
-      <button class="selector-tab" data-index="3">CARD 04</button>
-    </div>
-
-    <!-- Status Badge -->
+    <!-- Status Header -->
     <div class="status-badge" id="cardStatusBadge">
       <span class="pulse-dot"></span>
-      <span class="status-text" id="statusText">CARD 01 • SIDE A (FRONT)</span>
+      <span class="status-text">CLICK ANY CARD TO FLIP (SIDE A ↔ SIDE B)</span>
     </div>
 
-    <!-- Stage Wrapper with Navigation Arrows -->
-    <div class="stage-wrapper">
-      <button class="nav-arrow prev-arrow" id="prevCardBtn" aria-label="Previous Card" title="Previous Card (Left Arrow)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-
-      <!-- 3D Card Perspective Wrapper -->
-      <div class="card-container" id="cardContainer" tabindex="0" role="button" aria-label="Spider-Man Dossier Card. Click to flip.">
-        <div class="flip-card" id="flipCard">
-          
-          <!-- Card Front Face -->
+    <!-- Split Grid of Cards -->
+    <div class="cards-split-grid" id="cardsGrid">
+      
+      <!-- Card 1 -->
+      <div class="spider-card" data-id="1" tabindex="0" role="button" aria-label="Spider Dossier Card 1. Click to flip.">
+        <div class="card-tag">CARD 01</div>
+        <div class="flip-card" id="flipCard-1">
           <div class="card-face card-front">
             <div class="card-glass-shine"></div>
-            <img src="front_image.png" id="frontImg" alt="Spider-Man Dossier Front" class="card-img" />
+            <img src="front_image.png" alt="Card 01 Front" class="card-img" />
             <div class="card-border-glow"></div>
           </div>
-
-          <!-- Card Back Face -->
           <div class="card-face card-back">
             <div class="card-glass-shine"></div>
-            <img src="back_image.png" id="backImg" alt="Spider-Man Dossier Back" class="card-img" />
+            <img src="back_image.png" alt="Card 01 Back" class="card-img" />
             <div class="card-border-glow"></div>
           </div>
-
         </div>
+        <div class="card-side-label">SIDE A (FRONT)</div>
       </div>
 
-      <button class="nav-arrow next-arrow" id="nextCardBtn" aria-label="Next Card" title="Next Card (Right Arrow)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-    </div>
+      <!-- Card 2 -->
+      <div class="spider-card" data-id="2" tabindex="0" role="button" aria-label="Spider Dossier Card 2. Click to flip.">
+        <div class="card-tag">CARD 02</div>
+        <div class="flip-card" id="flipCard-2">
+          <div class="card-face card-front">
+            <div class="card-glass-shine"></div>
+            <img src="front 2.png" alt="Card 02 Front" class="card-img" />
+            <div class="card-border-glow"></div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-glass-shine"></div>
+            <img src="back 2.png" alt="Card 02 Back" class="card-img" />
+            <div class="card-border-glow"></div>
+          </div>
+        </div>
+        <div class="card-side-label">SIDE A (FRONT)</div>
+      </div>
 
-    <!-- Interactive Hint / Action Controls -->
-    <div class="action-controls">
-      <button class="flip-prompt-btn" id="flipPromptBtn">
-        <svg class="flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-        </svg>
-        <span>CLICK CARD TO FLIP</span>
-      </button>
+      <!-- Card 3 -->
+      <div class="spider-card" data-id="3" tabindex="0" role="button" aria-label="Spider Dossier Card 3. Click to flip.">
+        <div class="card-tag">CARD 03</div>
+        <div class="flip-card" id="flipCard-3">
+          <div class="card-face card-front">
+            <div class="card-glass-shine"></div>
+            <img src="front 3.png" alt="Card 03 Front" class="card-img" />
+            <div class="card-border-glow"></div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-glass-shine"></div>
+            <img src="back 3.png" alt="Card 03 Back" class="card-img" />
+            <div class="card-border-glow"></div>
+          </div>
+        </div>
+        <div class="card-side-label">SIDE A (FRONT)</div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="spider-card" data-id="4" tabindex="0" role="button" aria-label="Spider Dossier Card 4. Click to flip.">
+        <div class="card-tag">CARD 04</div>
+        <div class="flip-card" id="flipCard-4">
+          <div class="card-face card-front">
+            <div class="card-glass-shine"></div>
+            <img src="front 4.png" alt="Card 04 Front" class="card-img" />
+            <div class="card-border-glow"></div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-glass-shine"></div>
+            <img src="back 4.png" alt="Card 04 Back" class="card-img" />
+            <div class="card-border-glow"></div>
+          </div>
+        </div>
+        <div class="card-side-label">SIDE A (FRONT)</div>
+      </div>
+
     </div>
 
   </main>
 
-  <!-- Footer -->
+  <!-- Minimal Footer -->
   <footer class="minimal-footer">
     <span>WITH GREAT POWER COMES GREAT RESPONSIBILITY • SPIDER-VERSE DOSSIER VAULT</span>
   </footer>
