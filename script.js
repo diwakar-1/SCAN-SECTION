@@ -88,6 +88,164 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 1. Classic Peter Parker Sound Effect (Mechanical Web Thwip + Impact Punch)
+  function playClassicPeterSFX() {
+    if (!soundEnabled) return;
+    try {
+      initAudioContext();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(1900, now);
+      osc.frequency.exponentialRampToValueAtTime(140, now + 0.12);
+      gain.gain.setValueAtTime(0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+
+      const punchOsc = audioCtx.createOscillator();
+      const punchGain = audioCtx.createGain();
+      punchOsc.type = 'sine';
+      punchOsc.frequency.setValueAtTime(180, now);
+      punchOsc.frequency.exponentialRampToValueAtTime(45, now + 0.18);
+      punchGain.gain.setValueAtTime(0.45, now);
+      punchGain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+      punchOsc.connect(punchGain);
+      punchGain.connect(audioCtx.destination);
+      punchOsc.start(now);
+      punchOsc.stop(now + 0.18);
+    } catch (e) {}
+  }
+
+  // 2. Miles Morales Sound Effect (Bio-Electric Venom Strike Spark & Zap)
+  function playMilesVenomSFX() {
+    if (!soundEnabled) return;
+    try {
+      initAudioContext();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(380, now);
+      osc.frequency.linearRampToValueAtTime(960, now + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.22);
+      gain.gain.setValueAtTime(0.38, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.22);
+
+      const bufferSize = audioCtx.sampleRate * 0.1;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (Math.random() > 0.35 ? 1 : 0);
+      }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 3200;
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.5, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noise.start(now);
+      noise.stop(now + 0.1);
+    } catch (e) {}
+  }
+
+  // 3. Spider-Gwen Sound Effect (Ghost-Spider Acrobatic Chord Flutter)
+  function playGwenAcrobaticSFX() {
+    if (!soundEnabled) return;
+    try {
+      initAudioContext();
+      const now = audioCtx.currentTime;
+      [1046.50, 1318.51, 1567.98].forEach((f, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, now + i * 0.03);
+        osc.frequency.exponentialRampToValueAtTime(f * 0.45, now + i * 0.03 + 0.2);
+        gain.gain.setValueAtTime(0.24, now + i * 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.03 + 0.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + i * 0.03);
+        osc.stop(now + i * 0.03 + 0.2);
+      });
+    } catch (e) {}
+  }
+
+  // 4. Spider-Man 2099 Sound Effect (Cyberpunk Laser Glitch & Digital Impact)
+  function play2099CyberSFX() {
+    if (!soundEnabled) return;
+    try {
+      initAudioContext();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(190, now);
+      osc.frequency.exponentialRampToValueAtTime(55, now + 0.22);
+      gain.gain.setValueAtTime(0.32, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.22);
+
+      const oscHigh = audioCtx.createOscillator();
+      const gainHigh = audioCtx.createGain();
+      oscHigh.type = 'sawtooth';
+      oscHigh.frequency.setValueAtTime(3000, now);
+      oscHigh.frequency.linearRampToValueAtTime(3600, now + 0.06);
+      oscHigh.frequency.linearRampToValueAtTime(1100, now + 0.14);
+      gainHigh.gain.setValueAtTime(0.3, now);
+      gainHigh.gain.exponentialRampToValueAtTime(0.01, now + 0.14);
+      oscHigh.connect(gainHigh);
+      gainHigh.connect(audioCtx.destination);
+      oscHigh.start(now);
+      oscHigh.stop(now + 0.14);
+    } catch (e) {}
+  }
+
+  // Character-specific SFX dispatcher
+  function playHeroSpecificSFX(cardIndex) {
+    if (cardIndex === 0) playClassicPeterSFX();
+    else if (cardIndex === 1) playMilesVenomSFX();
+    else if (cardIndex === 2) playGwenAcrobaticSFX();
+    else if (cardIndex === 3) play2099CyberSFX();
+    else playWebThwipSound(1800);
+  }
+
+  // Multiverse Dimensional Warp SFX (Wallpaper switches)
+  function playMultiverseWarpSFX() {
+    if (!soundEnabled) return;
+    try {
+      initAudioContext();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(140, now + 0.28);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    } catch (e) {}
+  }
+
   // Synthesize Radio / Spider-Sense Chime when Hero Voice Plays
   function playSpiderSenseChime() {
     if (!soundEnabled) return;
@@ -464,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Trigger visual switch animation
     cardContainer.classList.add('switching');
-    playWebThwipSound(1800);
+    playHeroSpecificSFX(newIndex);
 
     setTimeout(() => {
       // Reset flip rotation
@@ -976,7 +1134,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.classList.toggle('active-wp', idx === currentWallpaperIndex);
     });
 
-    if (playSound) playWebThwipSound(1900);
+    if (playSound) playMultiverseWarpSFX();
   }
 
   // Randomize Background
@@ -1046,11 +1204,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function openModal() {
     populateWallpapersModal();
     wallpaperModal.classList.add('open');
-    playWebThwipSound(1500);
+    playSpiderSenseChime();
   }
 
   function closeModal() {
     wallpaperModal.classList.remove('open');
+    playWebThwipSound(1200);
   }
 
   // Event Listeners for Wallpaper Controls
