@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CYPHERVERSE 3D CARD VIEWER & DYNAMIC 4K WALLPAPER ENGINE
+   CYPHERVERSE 3D CARD VIEWER & DYNAMIC 4K WALLPAPER ENGINE (MOBILE ENHANCED)
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -39,6 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
       audioCtx.resume();
     }
   }
+
+  // Enable audio context automatically on first touch / tap (iOS Safari & Android Chrome)
+  const enableAudioOnTouch = () => {
+    initAudioContext();
+    document.removeEventListener('touchstart', enableAudioOnTouch);
+    document.removeEventListener('click', enableAudioOnTouch);
+  };
+  document.addEventListener('touchstart', enableAudioOnTouch, { passive: true });
+  document.addEventListener('click', enableAudioOnTouch, { passive: true });
 
   // Synthesize Web-Shooter / Card Flip "THWIP!" Sound Effect
   function playWebThwipSound(pitch = 1500) {
@@ -97,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // CANVAS BACKGROUND WEB PARTICLE SYSTEM
+  // CANVAS BACKGROUND WEB PARTICLE SYSTEM (RESPONSIVE FOR MOBILE)
   // ==========================================================================
   const canvas = document.getElementById('webCanvas');
   const ctx = canvas.getContext('2d');
@@ -105,20 +114,30 @@ document.addEventListener('DOMContentLoaded', () => {
   let width = canvas.width = window.innerWidth;
   let height = canvas.height = window.innerHeight;
 
-  window.addEventListener('resize', () => {
+  const resizeCanvas = () => {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
-  });
+  };
+
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('orientationchange', resizeCanvas);
 
   const mouse = { x: width / 2, y: height / 2, active: false };
 
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+  const updatePointer = (clientX, clientY) => {
+    mouse.x = clientX;
+    mouse.y = clientY;
     mouse.active = true;
-  });
+  };
 
-  const numNodes = Math.min(Math.floor(width / 24), 55);
+  window.addEventListener('mousemove', (e) => updatePointer(e.clientX, e.clientY));
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches[0]) {
+      updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  const numNodes = Math.min(Math.floor(width / 24), 40);
   const nodes = [];
 
   class WebNode {
@@ -248,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
   animateCanvas();
 
   // ==========================================================================
-  // CARD FLIP & 3D TILT MECHANICS
+  // CARD FLIP & 3D TILT MECHANICS (MOBILE TOUCH FRIENDLY)
   // ==========================================================================
   const cardContainer = document.getElementById('cardContainer');
   const flipCard = document.getElementById('flipCard');
@@ -259,14 +278,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     playWebThwipSound(1400);
     const rect = cardContainer.getBoundingClientRect();
-    const clickX = e && e.clientX ? e.clientX : rect.left + rect.width / 2;
-    const clickY = e && e.clientY ? e.clientY : rect.top + rect.height / 2;
+    let clickX = rect.left + rect.width / 2;
+    let clickY = rect.top + rect.height / 2;
+
+    if (e) {
+      if (e.clientX !== undefined) {
+        clickX = e.clientX;
+        clickY = e.clientY;
+      } else if (e.changedTouches && e.changedTouches[0]) {
+        clickX = e.changedTouches[0].clientX;
+        clickY = e.changedTouches[0].clientY;
+      }
+    }
     triggerWebBurst(clickX, clickY);
   }
 
   if (cardContainer) {
+    let touchStartTime = 0;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    // Handle touch tap cleanly on mobile devices without tap delay or ghost clicks
+    cardContainer.addEventListener('touchstart', (e) => {
+      touchStartTime = Date.now();
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    cardContainer.addEventListener('touchend', (e) => {
+      const duration = Date.now() - touchStartTime;
+      let endX = touchStartX;
+      let endY = touchStartY;
+      if (e.changedTouches && e.changedTouches[0]) {
+        endX = e.changedTouches[0].clientX;
+        endY = e.changedTouches[0].clientY;
+      }
+      const moveDistance = Math.hypot(endX - touchStartX, endY - touchStartY);
+
+      // If quick tap with minimal movement (<12px), trigger card flip
+      if (duration < 400 && moveDistance < 12) {
+        e.preventDefault();
+        toggleCardFlip(e);
+      }
+    });
+
+    // Mouse click for desktop
     cardContainer.addEventListener('click', (e) => {
-      toggleCardFlip(e);
+      // Prevent double trigger on touch devices
+      if (Date.now() - touchStartTime > 500) {
+        toggleCardFlip(e);
+      }
     });
 
     window.addEventListener('keydown', (e) => {
@@ -285,8 +348,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      const rotateX = ((y - centerY) / centerY) * -12;
-      const rotateY = ((x - centerX) / centerX) * 12;
+      const rotateX = ((y - centerY) / centerY) * -10;
+      const rotateY = ((x - centerX) / centerX) * 10;
 
       const baseRotationY = isFlipped ? 180 : 0;
       const finalRotateY = baseRotationY + rotateY;
