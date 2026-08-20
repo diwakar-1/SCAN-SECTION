@@ -3,16 +3,16 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Pool of dossier cards (randomly selected 1 card pair on load)
+  // Pool of dossier cards (strictly matched front N to back N)
   const cardsList = [
     { id: 1, front: "front 1.png", back: "back 1.png" },
     { id: 2, front: "front 2.png", back: "back 2.png" },
     { id: 3, front: "front 3.png", back: "back 3.png" },
-    { id: 4, front: "front 4.png", back: "back 1.png" },
+    { id: 4, front: "front 4.png", back: "back 4.png" },
     { id: 5, front: "front 5.png", back: "back 5.png" }
   ];
 
-  // Pick a random card on load
+  // Pick a random card pair on load (front N <-> back N)
   const currentCardIndex = Math.floor(Math.random() * cardsList.length);
   let isFlipped = false;
 
