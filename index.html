@@ -3,23 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spider-Verse Dossier Card | 3D Viewer</title>
-  <meta name="description" content="Ultra-minimalist 3D interactive Spider-Verse flip card featuring front and back hero dossier views.">
+  <title>Spider-Verse Dossier Vault | 3D Card & 4K Wallpaper Engine</title>
+  <meta name="description" content="Minimalist 3D interactive Spider-Verse flip card featuring front and back hero dossier views and dynamic 4K background wallpaper engine.">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+  <!-- Fullscreen Dynamic 4K Wallpaper Background System -->
+  <div class="wallpaper-container" id="wallpaperContainer">
+    <div class="wallpaper-layer active" id="wallpaperLayerA"></div>
+    <div class="wallpaper-layer" id="wallpaperLayerB"></div>
+    <div class="wallpaper-vignette"></div>
+  </div>
 
   <!-- Fullscreen Interactive Canvas for Web Particle Network -->
   <canvas id="webCanvas"></canvas>
   
   <!-- Comic Halftone Background Overlay -->
   <div class="comic-overlay"></div>
+
+  <!-- Corner Spider Web SVG Decorations -->
+  <div class="web-corner top-left">
+    <svg viewBox="0 0 100 100" fill="none" stroke="currentColor">
+      <path d="M0,0 L100,0 M0,0 L0,100 M0,100 L100,100" stroke-width="1"/>
+      <path d="M0,25 Q25,25 25,0" stroke-width="0.75"/>
+      <path d="M0,50 Q50,50 50,0" stroke-width="0.75"/>
+      <path d="M0,75 Q75,75 75,0" stroke-width="0.75"/>
+      <path d="M0,100 Q100,100 100,0" stroke-width="0.75"/>
+    </svg>
+  </div>
+  <div class="web-corner top-right">
+    <svg viewBox="0 0 100 100" fill="none" stroke="currentColor">
+      <path d="M100,0 L0,0 M100,0 L100,100 M100,0 L0,100" stroke-width="1"/>
+      <path d="M100,25 Q75,25 75,0" stroke-width="0.75"/>
+      <path d="M100,50 Q50,50 50,0" stroke-width="0.75"/>
+      <path d="M100,75 Q25,75 25,0" stroke-width="0.75"/>
+      <path d="M100,100 Q0,100 0,0" stroke-width="0.75"/>
+    </svg>
+  </div>
+
+  <!-- Minimal Navigation Bar -->
+  <header class="navbar">
+    <div class="logo-container">
+      <div class="spider-logo-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.5 7H18L15 10.5L16.5 15L12 12.5L7.5 15L9 10.5L6 7H9.5L12 2Z"/>
+          <path d="M12 2C10.5 5 7 8 3 7C2 10 4 14 7 15C5 17 3 21 2 22C6 21 9 18 10.5 16C11.5 17.5 12.5 17.5 13.5 16C15 18 18 21 22 22C21 21 19 17 17 15C20 14 22 10 21 7C17 8 13.5 5 12 2Z"/>
+        </svg>
+      </div>
+      <span class="logo-text">SPIDER<span class="highlight-blue">-DOSSIER</span></span>
+    </div>
+
+    <div class="header-actions">
+      <!-- Random Background Switcher -->
+      <button id="randomBgBtn" class="action-btn icon-btn" title="Randomize Background Wallpaper">
+        <span class="btn-icon">🎲</span>
+        <span class="btn-text">RANDOM BG</span>
+      </button>
+
+      <!-- Wallpaper Gallery Drawer Toggle -->
+      <button id="galleryToggleBtn" class="action-btn icon-btn" title="Open 4K Wallpaper Vault">
+        <span class="btn-icon">🖼️</span>
+        <span class="btn-text" id="galleryBtnText">WALLPAPERS</span>
+      </button>
+
+      <!-- Download 4K Mobile Wallpaper -->
+      <a id="downloadBgBtn" class="action-btn icon-btn highlight-btn" title="Download Current 4K Mobile Wallpaper" download="spider_verse_4k_wallpaper.jpg" href="#" target="_blank">
+        <span class="btn-icon">📥</span>
+        <span class="btn-text">GET 4K</span>
+      </a>
+
+      <!-- Sound FX Toggle -->
+      <button id="soundToggleBtn" class="action-btn icon-btn" title="Toggle Web Sound Effects">
+        <span class="sound-icon">🔊</span>
+        <span class="btn-text">FX: ON</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Background Wallpaper Active Info Strip -->
+  <div class="wallpaper-info-bar" id="wallpaperInfoBar">
+    <button class="bg-cycle-btn" id="prevBgBtn" title="Previous Wallpaper">◀</button>
+    <div class="bg-title-wrap">
+      <span class="bg-tag">4K BG:</span>
+      <span class="bg-title" id="bgTitleText">01 • Marvel's Spider-Man Action</span>
+    </div>
+    <button class="bg-cycle-btn" id="nextBgBtn" title="Next Wallpaper">▶</button>
+  </div>
 
   <!-- Main Central Card Stage: Single Card Only -->
   <main class="card-stage">
@@ -46,6 +122,24 @@
     </div>
 
   </main>
+
+  <!-- 4K Wallpaper Vault Modal -->
+  <div class="wallpaper-modal" id="wallpaperModal">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title">SPIDER-VERSE 4K WALLPAPER VAULT</h2>
+          <span class="modal-subtitle">12 Ultra-HD Wallpapers • Random on Every Launch</span>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close Wallpapers Vault">✕</button>
+      </div>
+
+      <div class="wallpapers-grid" id="wallpapersGrid">
+        <!-- Rendered dynamically by script.js -->
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
