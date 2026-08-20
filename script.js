@@ -1,8 +1,19 @@
 /* ==========================================================================
-   SPIDER-VERSE MINIMAL 3D FLIP CARD INTERACTION & PHYSICS
+   SPIDER-VERSE MINIMAL 3D MULTI-CARD INTERACTION & PHYSICS
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Card Collection Data
+  const cardsCollection = [
+    { id: 1, name: "CARD 01", front: "front_image.png", back: "back_image.png" },
+    { id: 2, name: "CARD 02", front: "front 2.png", back: "back 2.png" },
+    { id: 3, name: "CARD 03", front: "front 3.png", back: "back 3.png" },
+    { id: 4, name: "CARD 04", front: "front 4.png", back: "back 4.png" }
+  ];
+
+  let currentCardIndex = 0;
+  let isFlipped = false;
+
   // Sound FX State
   let soundEnabled = true;
   let audioCtx = null;
@@ -19,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Synthesize Web-Shooter / Card Flip "THWIP!" Sound Effect
-  function playWebThwipSound() {
+  function playWebThwipSound(pitch = 1500) {
     if (!soundEnabled) return;
     try {
       initAudioContext();
@@ -30,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const oscGain = audioCtx.createGain();
 
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(1500, now);
+      osc.frequency.setValueAtTime(pitch, now);
       osc.frequency.exponentialRampToValueAtTime(180, now + 0.14);
 
       oscGain.gain.setValueAtTime(0.35, now);
@@ -229,42 +240,106 @@ document.addEventListener('DOMContentLoaded', () => {
   animateCanvas();
 
   // ==========================================================================
-  // CARD FLIP & 3D TILT MECHANICS
+  // CARD COLLECTION SWITCHER & 3D FLIP MECHANICS
   // ==========================================================================
   const cardContainer = document.getElementById('cardContainer');
   const flipCard = document.getElementById('flipCard');
+  const frontImg = document.getElementById('frontImg');
+  const backImg = document.getElementById('backImg');
   const flipPromptBtn = document.getElementById('flipPromptBtn');
   const statusText = document.getElementById('statusText');
   const statusBadge = document.getElementById('cardStatusBadge');
+  const prevCardBtn = document.getElementById('prevCardBtn');
+  const nextCardBtn = document.getElementById('nextCardBtn');
+  const tabBtns = document.querySelectorAll('.selector-tab');
 
-  let isFlipped = false;
+  // Update Status Display Badge
+  function updateStatusBadge() {
+    const cardData = cardsCollection[currentCardIndex];
+    if (isFlipped) {
+      statusText.textContent = `${cardData.name} • SIDE B (BACK SPECS)`;
+      statusBadge.style.borderColor = 'rgba(230, 0, 18, 0.4)';
+      statusBadge.style.boxShadow = '0 0 15px rgba(230, 0, 18, 0.2)';
+    } else {
+      statusText.textContent = `${cardData.name} • SIDE A (FRONT COVER)`;
+      statusBadge.style.borderColor = 'rgba(0, 240, 255, 0.3)';
+      statusBadge.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.15)';
+    }
+  }
 
+  // Switch Active Card with Smooth Transition
+  function selectCard(newIndex) {
+    if (newIndex < 0) newIndex = cardsCollection.length - 1;
+    if (newIndex >= cardsCollection.length) newIndex = 0;
+    if (newIndex === currentCardIndex && !isFlipped) return;
+
+    currentCardIndex = newIndex;
+    isFlipped = false;
+
+    // Trigger visual switch animation
+    cardContainer.classList.add('switching');
+    playWebThwipSound(1800);
+
+    setTimeout(() => {
+      // Reset flip rotation
+      flipCard.classList.remove('flipped');
+      flipCard.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+
+      // Update image sources
+      const data = cardsCollection[currentCardIndex];
+      frontImg.src = data.front;
+      backImg.src = data.back;
+
+      // Update active tab buttons
+      tabBtns.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === currentCardIndex);
+      });
+
+      updateStatusBadge();
+
+      // Fade back in
+      cardContainer.classList.remove('switching');
+    }, 150);
+  }
+
+  // Toggle Card Flip
   function toggleCardFlip(e) {
     isFlipped = !isFlipped;
 
     // Toggle CSS class
     flipCard.classList.toggle('flipped', isFlipped);
 
-    // Audio & Web Burst effect
-    playWebThwipSound();
+    // Sound & Web Burst
+    playWebThwipSound(1400);
     const rect = cardContainer.getBoundingClientRect();
     const clickX = e && e.clientX ? e.clientX : rect.left + rect.width / 2;
     const clickY = e && e.clientY ? e.clientY : rect.top + rect.height / 2;
     triggerWebBurst(clickX, clickY);
 
-    // Update status badge UI
-    if (isFlipped) {
-      statusText.textContent = 'SIDE B • DOSSIER BACK';
-      statusBadge.style.borderColor = 'rgba(230, 0, 18, 0.4)';
-      statusBadge.style.boxShadow = '0 0 15px rgba(230, 0, 18, 0.2)';
-    } else {
-      statusText.textContent = 'SIDE A • DOSSIER FRONT';
-      statusBadge.style.borderColor = 'rgba(0, 240, 255, 0.3)';
-      statusBadge.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.15)';
-    }
+    updateStatusBadge();
   }
 
-  // Click Listeners
+  // Selector Tab Click Listeners
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.getAttribute('data-index'), 10);
+      selectCard(index);
+    });
+  });
+
+  // Navigation Buttons
+  prevCardBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectCard(currentCardIndex - 1);
+  });
+
+  nextCardBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectCard(currentCardIndex + 1);
+  });
+
+  // Card & Prompt Button Clicks
   cardContainer.addEventListener('click', (e) => {
     toggleCardFlip(e);
   });
@@ -274,13 +349,37 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleCardFlip(e);
   });
 
-  // Keyboard accessibility (Spacebar or Enter key)
-  cardContainer.addEventListener('keydown', (e) => {
-    if (e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      toggleCardFlip();
+  // Keyboard Navigation & Accessibility
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      selectCard(currentCardIndex - 1);
+    } else if (e.key === 'ArrowRight') {
+      selectCard(currentCardIndex + 1);
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      if (document.activeElement === cardContainer || document.activeElement === document.body) {
+        e.preventDefault();
+        toggleCardFlip();
+      }
     }
   });
+
+  // Touch Swipe Gesture Navigation
+  let touchStartX = 0;
+  cardContainer.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  cardContainer.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const diffX = touchEndX - touchStartX;
+    if (Math.abs(diffX) > 50) {
+      if (diffX < 0) {
+        selectCard(currentCardIndex + 1);
+      } else {
+        selectCard(currentCardIndex - 1);
+      }
+    }
+  }, { passive: true });
 
   // Interactive 3D Perspective Tilt Tracking
   cardContainer.addEventListener('mousemove', (e) => {
@@ -312,6 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
     soundEnabled = !soundEnabled;
     soundToggleBtn.querySelector('.btn-text').textContent = soundEnabled ? 'THWIP FX: ON' : 'THWIP FX: OFF';
     soundToggleBtn.querySelector('.sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
-    if (soundEnabled) playWebThwipSound();
+    if (soundEnabled) playWebThwipSound(1600);
   });
 });

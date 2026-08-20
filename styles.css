@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SPIDER-VERSE MINIMAL 3D FLIP CARD STYLESHEET
+   SPIDER-VERSE MINIMAL 3D MULTI-CARD STYLESHEET
    ========================================================================== */
 
 :root {
@@ -19,11 +19,6 @@
 
   --accent-gold: #FFD700;
   --accent-cyan: #00F0FF;
-  
-  /* Typography */
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
   
   /* Radii & Shadows */
   --radius-sm: 8px;
@@ -168,21 +163,56 @@ body {
   background: rgba(230, 0, 18, 0.2);
   border-color: var(--spider-red);
   box-shadow: 0 0 15px var(--spider-red-glow);
-
 }
 
 /* ==========================================================================
-   MAIN CARD STAGE & 3D FLIP MECHANICS
+   MAIN CARD STAGE
    ========================================================================== */
 .card-stage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
   flex: 1;
-  padding: 1.5rem;
+  padding: 1.2rem;
   width: 100%;
+}
+
+/* Card Selector Tabs */
+.card-selector-tabs {
+  display: flex;
+  gap: 0.6rem;
+  background: rgba(15, 20, 32, 0.7);
+  padding: 0.35rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.selector-tab {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 0.45rem 1.1rem;
+  border-radius: 50px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.selector-tab:hover {
+  color: var(--text-white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.selector-tab.active {
+  color: var(--text-white);
+  background: linear-gradient(135deg, var(--spider-red), #B3000E);
+  box-shadow: 0 4px 15px var(--spider-red-glow);
 }
 
 /* Status Badge */
@@ -190,12 +220,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.4rem 1.2rem;
+  padding: 0.35rem 1.1rem;
   background: rgba(20, 25, 38, 0.7);
   border: 1px solid rgba(0, 240, 255, 0.3);
   border-radius: 50px;
   backdrop-filter: blur(8px);
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+  transition: all 0.3s ease;
 }
 
 .pulse-dot {
@@ -214,22 +245,71 @@ body {
 
 .status-text {
   font-family: var(--font-heading);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 1.5px;
   color: var(--accent-cyan);
   text-transform: uppercase;
 }
 
+/* Stage Wrapper & Navigation Arrows */
+.stage-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 650px;
+}
+
+.nav-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(20, 25, 38, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.nav-arrow svg {
+  width: 22px;
+  height: 22px;
+}
+
+.nav-arrow:hover {
+  background: rgba(230, 0, 18, 0.3);
+  border-color: var(--spider-red);
+  color: #FFF;
+  transform: scale(1.12);
+  box-shadow: 0 0 20px var(--spider-red-glow);
+}
+
+.nav-arrow:active {
+  transform: scale(0.95);
+}
+
 /* 3D Card Container */
 .card-container {
   perspective: 1200px;
-  width: min(390px, 86vw);
+  width: min(370px, 78vw);
   aspect-ratio: 1 / 1.4;
   cursor: pointer;
   outline: none;
   position: relative;
-  transition: filter var(--transition-fast);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.card-container.switching {
+  opacity: 0;
+  transform: scale(0.9) translateY(10px);
 }
 
 .card-container:focus-visible .card-face {
@@ -319,14 +399,21 @@ body {
   z-index: 3;
 }
 
-/* Flip Interactive Prompt Button */
+/* Action Controls & Flip Prompt Button */
+.action-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
 .flip-prompt-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 0.75rem 1.8rem;
+  padding: 0.7rem 1.8rem;
   font-family: var(--font-heading);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -363,7 +450,7 @@ body {
 .minimal-footer {
   width: 100%;
   text-align: center;
-  padding: 1rem;
+  padding: 0.9rem;
   font-family: var(--font-heading);
   font-size: 0.75rem;
   font-weight: 600;
@@ -373,18 +460,33 @@ body {
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 480px) {
+@media (max-width: 580px) {
   .navbar {
-    padding: 1rem 1.2rem;
+    padding: 0.9rem 1.2rem;
   }
   .logo-text {
     font-size: 1.4rem;
   }
+  .stage-wrapper {
+    gap: 0.5rem;
+  }
+  .nav-arrow {
+    width: 40px;
+    height: 40px;
+  }
   .card-container {
-    width: 88vw;
+    width: 78vw;
+  }
+  .card-selector-tabs {
+    padding: 0.25rem;
+    gap: 0.3rem;
+  }
+  .selector-tab {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.72rem;
   }
   .flip-prompt-btn {
-    padding: 0.65rem 1.4rem;
-    font-size: 0.85rem;
+    padding: 0.6rem 1.3rem;
+    font-size: 0.8rem;
   }
 }
