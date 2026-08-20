@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spider-Verse Dossier Card | Interactive 3D Viewer</title>
+  <meta name="description" content="Minimalist 3D interactive Spider-Verse flip card featuring front and back hero dossier views, audio feedback, and ambient web particle effects.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Fullscreen Interactive Canvas for Web Particle Network -->
+  <canvas id="webCanvas"></canvas>
+  
+  <!-- Comic Halftone Background Overlay -->
+  <div class="comic-overlay"></div>
+
+  <!-- Corner Spider Web SVG Decorations -->
+  <div class="web-corner top-left">
+    <svg viewBox="0 0 100 100" fill="none" stroke="currentColor">
+      <path d="M0,0 L100,0 M0,0 L0,100 M0,0 L100,100" stroke-width="1"/>
+      <path d="M0,25 Q25,25 25,0" stroke-width="0.75"/>
+      <path d="M0,50 Q50,50 50,0" stroke-width="0.75"/>
+      <path d="M0,75 Q75,75 75,0" stroke-width="0.75"/>
+      <path d="M0,100 Q100,100 100,0" stroke-width="0.75"/>
+    </svg>
+  </div>
+  <div class="web-corner top-right">
+    <svg viewBox="0 0 100 100" fill="none" stroke="currentColor">
+      <path d="M100,0 L0,0 M100,0 L100,100 M100,0 L0,100" stroke-width="1"/>
+      <path d="M100,25 Q75,25 75,0" stroke-width="0.75"/>
+      <path d="M100,50 Q50,50 50,0" stroke-width="0.75"/>
+      <path d="M100,75 Q25,75 25,0" stroke-width="0.75"/>
+      <path d="M100,100 Q0,100 0,0" stroke-width="0.75"/>
+    </svg>
+  </div>
+
+  <!-- Minimal Navigation Bar -->
+  <header class="navbar">
+    <div class="logo-container">
+      <div class="spider-logo-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.5 7H18L15 10.5L16.5 15L12 12.5L7.5 15L9 10.5L6 7H9.5L12 2Z"/>
+          <path d="M12 2C10.5 5 7 8 3 7C2 10 4 14 7 15C5 17 3 21 2 22C6 21 9 18 10.5 16C11.5 17.5 12.5 17.5 13.5 16C15 18 18 21 22 22C21 21 19 17 17 15C20 14 22 10 21 7C17 8 13.5 5 12 2Z"/>
+        </svg>
+      </div>
+      <span class="logo-text">SPIDER<span class="highlight-blue">-DOSSIER</span></span>
+    </div>
+
+    <div class="header-actions">
+      <button id="soundToggleBtn" class="action-btn icon-btn" title="Toggle Web Sound Effects">
+        <span class="sound-icon">🔊</span>
+        <span class="btn-text">THWIP FX: ON</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Central Card Stage -->
+  <main class="card-stage">
+    
+    <!-- Status Badge -->
+    <div class="status-badge" id="cardStatusBadge">
+      <span class="pulse-dot"></span>
+      <span class="status-text" id="statusText">SIDE A • FRONT COVER</span>
+    </div>
+
+    <!-- 3D Card Perspective Wrapper -->
+    <div class="card-container" id="cardContainer" tabindex="0" role="button" aria-label="Spider-Man Dossier Card. Click or press Space to flip card.">
+      <div class="flip-card" id="flipCard">
+        
+        <!-- Card Front Face -->
+        <div class="card-face card-front">
+          <div class="card-glass-shine"></div>
+          <img src="front_image.png" alt="Spider-Man Dossier Front" class="card-img" />
+          <div class="card-border-glow"></div>
+        </div>
+
+        <!-- Card Back Face -->
+        <div class="card-face card-back">
+          <div class="card-glass-shine"></div>
+          <img src="back_image.png" alt="Spider-Man Dossier Back" class="card-img" />
+          <div class="card-border-glow"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Interactive Hint / Action Control -->
+    <button class="flip-prompt-btn" id="flipPromptBtn">
+      <svg class="flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+      </svg>
+      <span>CLICK CARD TO FLIP</span>
+    </button>
+
+  </main>
+
+  <!-- Footer Footer -->
+  <footer class="minimal-footer">
+    <span>WITH GREAT POWER COMES GREAT RESPONSIBILITY • SPIDER-VERSE VAULT</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
