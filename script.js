@@ -3,12 +3,13 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Pool of dossier cards (randomly selected 1 card on load)
+  // Pool of dossier cards (randomly selected 1 card pair on load)
   const cardsList = [
-    { id: 1, front: "front_image.png", back: "back_image.png" },
+    { id: 1, front: "front 1.png", back: "back 1.png" },
     { id: 2, front: "front 2.png", back: "back 2.png" },
     { id: 3, front: "front 3.png", back: "back 3.png" },
-    { id: 4, front: "front 4.png", back: "back 4.png" }
+    { id: 4, front: "front 4.png", back: "back 1.png" },
+    { id: 5, front: "front 5.png", back: "back 5.png" }
   ];
 
   // Pick a random card on load
@@ -300,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // DYNAMIC 4K WALLPAPER BACKGROUND ENGINE (RUNS SILENTLY IN BACKGROUND)
+  // DYNAMIC 4K WALLPAPER BACKGROUND ENGINE (AUTO ROTATES EVERY 2.5 SECONDS)
   // ==========================================================================
   const wallpapersCollection = [
     "background/marvels-spider-man-3840x2160-12554.jpeg",
@@ -345,6 +346,17 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
   }
 
+  // Randomize wallpaper selection
+  function randomizeWallpaper() {
+    if (wallpapersCollection.length <= 1) return;
+    let nextIdx;
+    do {
+      nextIdx = Math.floor(Math.random() * wallpapersCollection.length);
+    } while (nextIdx === currentWallpaperIndex);
+
+    applyWallpaper(nextIdx);
+  }
+
   // Pick a fresh random background on page load
   function initRandomWallpaper() {
     let lastIdx = -1;
@@ -365,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyWallpaper(initialIdx);
   }
 
-  // Start background engine
+  // Start background engine & set 2.5 second auto-rotation interval
   initRandomWallpaper();
+  setInterval(randomizeWallpaper, 2500);
 });

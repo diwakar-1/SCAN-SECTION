@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cypherverse | 3D Interactive Card Viewer</title>
-  <meta name="description" content="Cypherverse 3D interactive flip card viewer featuring front and back hero dossier views and dynamic 4K background wallpaper engine.">
-  
+  <meta name="description"
+    content="Cypherverse 3D interactive flip card viewer featuring front and back hero dossier views and dynamic 4K background wallpaper engine.">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;800;900&display=swap"
+    rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
   <!-- Fullscreen Dynamic 4K Wallpaper Background System -->
@@ -24,27 +29,27 @@
 
   <!-- Fullscreen Interactive Canvas for Web Particle Network -->
   <canvas id="webCanvas"></canvas>
-  
+
   <!-- Comic Halftone Background Overlay -->
   <div class="comic-overlay"></div>
 
   <!-- Corner Spider Web SVG Decorations -->
   <div class="web-corner top-left">
     <svg viewBox="0 0 100 100" fill="none" stroke="currentColor">
-      <path d="M0,0 L100,0 M0,0 L0,100 M0,100 L100,100" stroke-width="1"/>
-      <path d="M0,25 Q25,25 25,0" stroke-width="0.75"/>
-      <path d="M0,50 Q50,50 50,0" stroke-width="0.75"/>
-      <path d="M0,75 Q75,75 75,0" stroke-width="0.75"/>
-      <path d="M0,100 Q100,100 100,0" stroke-width="0.75"/>
+      <path d="M0,0 L100,0 M0,0 L0,100 M0,100 L100,100" stroke-width="1" />
+      <path d="M0,25 Q25,25 25,0" stroke-width="0.75" />
+      <path d="M0,50 Q50,50 50,0" stroke-width="0.75" />
+      <path d="M0,75 Q75,75 75,0" stroke-width="0.75" />
+      <path d="M0,100 Q100,100 100,0" stroke-width="0.75" />
     </svg>
   </div>
   <div class="web-corner top-right">
     <svg viewBox="0 0 100 100" fill="none" stroke="currentColor">
-      <path d="M100,0 L0,0 M100,0 L100,100 M100,0 L0,100" stroke-width="1"/>
-      <path d="M100,25 Q75,25 75,0" stroke-width="0.75"/>
-      <path d="M100,50 Q50,50 50,0" stroke-width="0.75"/>
-      <path d="M100,75 Q25,75 25,0" stroke-width="0.75"/>
-      <path d="M100,100 Q0,100 0,0" stroke-width="0.75"/>
+      <path d="M100,0 L0,0 M100,0 L100,100 M100,0 L0,100" stroke-width="1" />
+      <path d="M100,25 Q75,25 75,0" stroke-width="0.75" />
+      <path d="M100,50 Q50,50 50,0" stroke-width="0.75" />
+      <path d="M100,75 Q25,75 25,0" stroke-width="0.75" />
+      <path d="M100,100 Q0,100 0,0" stroke-width="0.75" />
     </svg>
   </div>
 
@@ -58,22 +63,23 @@
 
   <!-- Main Central Card Stage: Single Card Only -->
   <main class="card-stage">
-    
+
     <!-- 3D Card Perspective Wrapper -->
-    <div class="card-container" id="cardContainer" tabindex="0" role="button" aria-label="Cypherverse Dossier Card. Click to flip.">
+    <div class="card-container" id="cardContainer" tabindex="0" role="button"
+      aria-label="Cypherverse Dossier Card. Click to flip.">
       <div class="flip-card" id="flipCard">
-        
+
         <!-- Card Front Face -->
         <div class="card-face card-front">
           <div class="card-glass-shine"></div>
-          <img src="front_image.png" id="frontImg" alt="Cypherverse Dossier Front" class="card-img" />
+          <img src="front 1.png" id="frontImg" alt="Cypherverse Dossier Front" class="card-img" />
           <div class="card-border-glow"></div>
         </div>
 
         <!-- Card Back Face -->
         <div class="card-face card-back">
           <div class="card-glass-shine"></div>
-          <img src="back_image.png" id="backImg" alt="Cypherverse Dossier Back" class="card-img" />
+          <img src="back 1.png" id="backImg" alt="Cypherverse Dossier Back" class="card-img" />
           <div class="card-border-glow"></div>
         </div>
 
@@ -84,4 +90,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>
