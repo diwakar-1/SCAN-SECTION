@@ -603,8 +603,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================================================
-  // LOOPING BACKGROUND THEME MUSIC ENGINE (from music/ folder)
+  // LOOPING BACKGROUND THEME MUSIC PLAYLIST ENGINE (from music/ folder)
   // ==========================================================================
+  const musicPlaylist = [
+    { id: 1, title: "Spider-Man Theme Song", file: "music/spiderman_theme_song.mp3" },
+    { id: 2, title: "Bully Maguire Theme", file: "music/bully_maguire_theme.mp3" },
+    { id: 3, title: "Spider-Verse Ambience", file: "music/Audio 2026-08-20 at 12.22.53 PM.mpeg" }
+  ];
+
+  let currentTrackIndex = 0;
   const bgThemeAudio = document.getElementById('bgThemeAudio');
   const musicToggleBtn = document.getElementById('musicToggleBtn');
   const musicBtnText = document.getElementById('musicBtnText');
@@ -614,20 +621,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (bgThemeAudio) {
     bgThemeAudio.loop = true;
-    bgThemeAudio.volume = 0.55; // 55% background theme volume
+    bgThemeAudio.volume = 0.55;
+    bgThemeAudio.src = musicPlaylist[0].file;
+  }
+
+  function switchTrack(index) {
+    if (index < 0) index = musicPlaylist.length - 1;
+    if (index >= musicPlaylist.length) index = 0;
+    currentTrackIndex = index;
+    const track = musicPlaylist[currentTrackIndex];
+    if (bgThemeAudio) {
+      const wasPlaying = !bgThemeAudio.paused;
+      bgThemeAudio.src = track.file;
+      bgThemeAudio.load();
+      if (wasPlaying) {
+        bgThemeAudio.play().then(() => updateMusicUI(true)).catch(() => {});
+      }
+    }
   }
 
   function updateMusicUI(playing) {
     isMusicPlaying = playing;
     if (musicToggleBtn) {
+      const track = musicPlaylist[currentTrackIndex];
       if (playing) {
         musicToggleBtn.classList.remove('is-paused');
         musicToggleBtn.classList.add('is-playing');
-        if (musicBtnText) musicBtnText.textContent = 'MUSIC: ON';
+        if (musicBtnText) musicBtnText.textContent = `MUSIC: ON`;
+        musicToggleBtn.title = `Now Playing: ${track.title} (Click to Pause, Press M)`;
       } else {
         musicToggleBtn.classList.remove('is-playing');
         musicToggleBtn.classList.add('is-paused');
         if (musicBtnText) musicBtnText.textContent = 'MUSIC: OFF';
+        musicToggleBtn.title = `Music Paused (Click to Play, Press M)`;
       }
     }
   }
