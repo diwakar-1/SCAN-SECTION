@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SPIDER-VERSE MINIMAL 3D FLIP CARD & DYNAMIC 4K WALLPAPER STYLESHEET
+   CYPHERVERSE 3D FLIP CARD & DYNAMIC 4K WALLPAPER STYLESHEET
    ========================================================================== */
 
 :root {
@@ -25,8 +25,8 @@
   --radius-md: 16px;
   --radius-lg: 24px;
   
-  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 102, 255, 0.2);
-  --shadow-hover: 0 35px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(230, 0, 18, 0.4);
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px rgba(230, 0, 18, 0.25);
+  --shadow-hover: 0 35px 60px -15px rgba(0, 0, 0, 0.95), 0 0 45px rgba(230, 0, 18, 0.5);
   
   /* Transitions */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -43,7 +43,7 @@
 html {
   width: 100%;
   min-height: 100vh;
-  font-family: var(--font-body);
+  font-family: 'Inter', sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-white);
   overflow-x: hidden;
@@ -52,7 +52,7 @@ html {
 body {
   width: 100%;
   min-height: 100vh;
-  font-family: var(--font-body);
+  font-family: 'Inter', sans-serif;
   background: transparent;
   color: var(--text-white);
   overflow-x: hidden;
@@ -105,7 +105,7 @@ body {
   position: absolute;
   inset: 0;
   background: 
-    radial-gradient(ellipse at center, rgba(7, 9, 14, 0.25) 0%, rgba(7, 9, 14, 0.6) 65%, rgba(7, 9, 14, 0.9) 100%),
+    radial-gradient(ellipse at center, rgba(7, 9, 14, 0.25) 0%, rgba(7, 9, 14, 0.65) 65%, rgba(7, 9, 14, 0.9) 100%),
     linear-gradient(180deg, rgba(7, 9, 14, 0.5) 0%, transparent 20%, transparent 80%, rgba(7, 9, 14, 0.75) 100%);
   z-index: 2;
   pointer-events: none;
@@ -152,159 +152,51 @@ body {
 .web-corner.top-right { top: 0; right: 0; }
 
 /* ==========================================================================
-   MINIMAL NAVBAR & CONTROLS
+   CYPHERVERSE NAVBAR
    ========================================================================== */
 .navbar {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 0.9rem 2rem;
-  background: rgba(11, 14, 20, 0.78);
+  padding: 1.1rem 2rem;
+  background: rgba(11, 14, 20, 0.65);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 20;
   position: relative;
-  flex-wrap: wrap;
-  gap: 0.75rem;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
-.spider-logo-icon {
-  width: 32px;
-  height: 32px;
-  color: var(--spider-red);
-  filter: drop-shadow(0 0 10px var(--spider-red-glow));
+.spider-logo-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px var(--spider-red-glow));
   animation: pulseLogo 3s infinite ease-in-out;
 }
 
 @keyframes pulseLogo {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px var(--spider-red-glow)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 16px var(--spider-red)); }
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--spider-red-glow)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 18px var(--spider-red)); }
 }
 
 .logo-text {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  letter-spacing: 2px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.1rem;
+  letter-spacing: 3px;
   color: var(--text-white);
+  line-height: 1;
 }
 
-.logo-text .highlight-blue {
-  color: var(--spider-blue-bright);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.78rem;
-  letter-spacing: 0.5px;
-  padding: 0.45rem 0.95rem;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-white);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  backdrop-filter: blur(8px);
-}
-
-.action-btn:hover {
-  background: rgba(230, 0, 18, 0.25);
-  border-color: var(--spider-red);
-  box-shadow: 0 0 16px var(--spider-red-glow);
-  transform: translateY(-1px);
-}
-
-.action-btn:active {
-  transform: translateY(1px);
-}
-
-.action-btn.highlight-btn {
-  background: linear-gradient(135deg, rgba(0, 102, 255, 0.35), rgba(0, 81, 186, 0.5));
-  border-color: var(--accent-cyan);
-  color: #FFF;
-}
-
-.action-btn.highlight-btn:hover {
-  background: linear-gradient(135deg, var(--spider-blue-bright), var(--spider-blue));
-  box-shadow: 0 0 18px var(--spider-blue-glow);
-  border-color: #FFF;
-}
-
-/* Background Info Strip */
-.wallpaper-info-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.35rem 0.9rem;
-  background: rgba(14, 18, 28, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 30px;
-  backdrop-filter: blur(10px);
-  z-index: 10;
-  margin-top: 0.8rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.bg-cycle-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--text-white);
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  font-size: 0.65rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-}
-
-.bg-cycle-btn:hover {
-  background: var(--spider-red);
-  border-color: var(--spider-red);
-}
-
-.bg-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-family: var(--font-heading);
-  font-size: 0.75rem;
-}
-
-.bg-tag {
-  color: var(--accent-cyan);
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.bg-title {
-  color: var(--text-white);
-  font-weight: 600;
-  max-width: 260px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.logo-text .highlight-red {
+  color: var(--spider-red);
 }
 
 /* ==========================================================================
@@ -323,7 +215,7 @@ body {
 /* 3D Card Container */
 .card-container {
   perspective: 1200px;
-  width: min(400px, 85vw);
+  width: min(420px, 86vw);
   aspect-ratio: 1 / 1.4;
   cursor: pointer;
   outline: none;
@@ -332,8 +224,8 @@ body {
 }
 
 .card-container:focus-visible .card-face {
-  border-color: #00F0FF;
-  box-shadow: 0 0 25px #00F0FF;
+  border-color: var(--spider-red);
+  box-shadow: 0 0 25px var(--spider-red-glow);
 }
 
 /* Flip Card Inner Wrapper */
@@ -418,324 +310,19 @@ body {
   z-index: 3;
 }
 
-/* ==========================================================================
-   4K WALLPAPER VAULT MODAL
-   ========================================================================== */
-.wallpaper-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 1.5rem;
-}
-
-.wallpaper-modal.open {
-  opacity: 1;
-  visibility: visible;
-}
-
-.modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(4, 6, 10, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.modal-content {
-  position: relative;
-  width: 100%;
-  max-width: 960px;
-  max-height: 88vh;
-  background: rgba(14, 18, 28, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 102, 255, 0.25);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 2;
-  transform: scale(0.92) translateY(20px);
-  transition: transform 0.35s cubic-bezier(0.34, 1.35, 0.64, 1);
-}
-
-.wallpaper-modal.open .modal-content {
-  transform: scale(1) translateY(0);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.2rem 1.6rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(20, 26, 40, 0.6);
-}
-
-.modal-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.modal-title {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  letter-spacing: 1.5px;
-  color: var(--text-white);
-  line-height: 1.1;
-}
-
-.modal-subtitle {
-  font-family: var(--font-heading);
-  font-size: 0.78rem;
-  color: var(--accent-cyan);
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.modal-close-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-white);
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.modal-close-btn:hover {
-  background: var(--spider-red);
-  border-color: var(--spider-red);
-  transform: rotate(90deg);
-  box-shadow: 0 0 15px var(--spider-red-glow);
-}
-
-/* Wallpapers Grid */
-.wallpapers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 1.2rem;
-  padding: 1.5rem;
-  overflow-y: auto;
-  max-height: calc(88vh - 85px);
-}
-
-/* Custom Scrollbar for Modal */
-.wallpapers-grid::-webkit-scrollbar {
-  width: 6px;
-}
-.wallpapers-grid::-webkit-scrollbar-track {
-  background: rgba(10, 14, 22, 0.5);
-}
-.wallpapers-grid::-webkit-scrollbar-thumb {
-  background: rgba(230, 0, 18, 0.5);
-  border-radius: 3px;
-}
-.wallpapers-grid::-webkit-scrollbar-thumb:hover {
-  background: var(--spider-red);
-}
-
-/* Wallpaper Card item */
-.wp-card {
-  position: relative;
-  background: rgba(22, 28, 44, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.wp-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(0, 240, 255, 0.5);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.2);
-}
-
-.wp-card.active-wp {
-  border-color: var(--spider-red);
-  box-shadow: 0 0 20px var(--spider-red-glow);
-}
-
-.wp-thumb-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 9 / 14;
-  overflow: hidden;
-  background: #0B0E14;
-}
-
-.wp-thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.wp-card:hover .wp-thumb-img {
-  transform: scale(1.08);
-}
-
-.wp-active-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: linear-gradient(135deg, var(--spider-red), #B3000E);
-  color: #FFF;
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 0.65rem;
-  letter-spacing: 1px;
-  padding: 0.25rem 0.6rem;
-  border-radius: 20px;
-  box-shadow: 0 2px 10px var(--spider-red-glow);
-  display: none;
-}
-
-.wp-card.active-wp .wp-active-badge {
-  display: block;
-}
-
-.wp-quality-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(11, 14, 20, 0.75);
-  backdrop-filter: blur(6px);
-  color: var(--accent-cyan);
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 0.62rem;
-  letter-spacing: 0.5px;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 240, 255, 0.3);
-}
-
-.wp-info {
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  background: rgba(15, 20, 32, 0.9);
-}
-
-.wp-title {
-  font-family: var(--font-heading);
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--text-white);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.wp-actions {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.wp-btn {
-  flex: 1;
-  font-family: var(--font-heading);
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 0.35rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  text-align: center;
-  transition: all var(--transition-fast);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-}
-
-.wp-btn.apply-btn {
-  background: rgba(230, 0, 18, 0.2);
-  color: var(--text-white);
-  border-color: rgba(230, 0, 18, 0.4);
-}
-
-.wp-btn.apply-btn:hover {
-  background: var(--spider-red);
-  box-shadow: 0 0 10px var(--spider-red-glow);
-}
-
-.wp-btn.dl-btn {
-  background: rgba(0, 102, 255, 0.2);
-  color: var(--accent-cyan);
-  border-color: rgba(0, 102, 255, 0.4);
-}
-
-.wp-btn.dl-btn:hover {
-  background: var(--spider-blue-bright);
-  color: #FFF;
-  box-shadow: 0 0 10px var(--spider-blue-glow);
-}
-
-/* Minimal Footer */
-.minimal-footer {
-  width: 100%;
-  text-align: center;
-  padding: 0.9rem;
-  font-family: var(--font-heading);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: rgba(255, 255, 255, 0.5);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  position: relative;
-  z-index: 20;
-}
-
 /* Mobile Responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .navbar {
-    padding: 0.75rem 1rem;
-    justify-content: center;
+    padding: 0.85rem 1.2rem;
   }
-  .logo-container {
-    width: 100%;
-    justify-content: center;
-    margin-bottom: 0.2rem;
+  .spider-logo-img {
+    width: 36px;
+    height: 36px;
   }
-  .header-actions {
-    width: 100%;
-    justify-content: center;
-    gap: 0.35rem;
-  }
-  .action-btn {
-    font-size: 0.72rem;
-    padding: 0.4rem 0.7rem;
-  }
-  .wallpapers-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.8rem;
-    padding: 1rem;
-  }
-}
-
-@media (max-width: 580px) {
   .logo-text {
-    font-size: 1.35rem;
+    font-size: 1.75rem;
   }
   .card-container {
-    width: 86vw;
+    width: 88vw;
   }
 }

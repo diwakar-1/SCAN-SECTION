@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spider-Verse Dossier Vault | 3D Card & 4K Wallpaper Engine</title>
-  <meta name="description" content="Minimalist 3D interactive Spider-Verse flip card featuring front and back hero dossier views and dynamic 4K background wallpaper engine.">
+  <title>Cypherverse | 3D Interactive Card Viewer</title>
+  <meta name="description" content="Cypherverse 3D interactive flip card viewer featuring front and back hero dossier views and dynamic 4K background wallpaper engine.">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,73 +48,32 @@
     </svg>
   </div>
 
-  <!-- Minimal Navigation Bar -->
+  <!-- Cypherverse Header -->
   <header class="navbar">
     <div class="logo-container">
-      <div class="spider-logo-icon">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L14.5 7H18L15 10.5L16.5 15L12 12.5L7.5 15L9 10.5L6 7H9.5L12 2Z"/>
-          <path d="M12 2C10.5 5 7 8 3 7C2 10 4 14 7 15C5 17 3 21 2 22C6 21 9 18 10.5 16C11.5 17.5 12.5 17.5 13.5 16C15 18 18 21 22 22C21 21 19 17 17 15C20 14 22 10 21 7C17 8 13.5 5 12 2Z"/>
-        </svg>
-      </div>
-      <span class="logo-text">SPIDER<span class="highlight-blue">-DOSSIER</span></span>
-    </div>
-
-    <div class="header-actions">
-      <!-- Random Background Switcher -->
-      <button id="randomBgBtn" class="action-btn icon-btn" title="Randomize Background Wallpaper">
-        <span class="btn-icon">🎲</span>
-        <span class="btn-text">RANDOM BG</span>
-      </button>
-
-      <!-- Wallpaper Gallery Drawer Toggle -->
-      <button id="galleryToggleBtn" class="action-btn icon-btn" title="Open 4K Wallpaper Vault">
-        <span class="btn-icon">🖼️</span>
-        <span class="btn-text" id="galleryBtnText">WALLPAPERS</span>
-      </button>
-
-      <!-- Download 4K Mobile Wallpaper -->
-      <a id="downloadBgBtn" class="action-btn icon-btn highlight-btn" title="Download Current 4K Mobile Wallpaper" download="spider_verse_4k_wallpaper.jpg" href="#" target="_blank">
-        <span class="btn-icon">📥</span>
-        <span class="btn-text">GET 4K</span>
-      </a>
-
-      <!-- Sound FX Toggle -->
-      <button id="soundToggleBtn" class="action-btn icon-btn" title="Toggle Web Sound Effects">
-        <span class="sound-icon">🔊</span>
-        <span class="btn-text">FX: ON</span>
-      </button>
+      <img src="spider.png" alt="Cypherverse Spider Logo" class="spider-logo-img" />
+      <span class="logo-text">CYPHER<span class="highlight-red">VERSE</span></span>
     </div>
   </header>
-
-  <!-- Background Wallpaper Active Info Strip -->
-  <div class="wallpaper-info-bar" id="wallpaperInfoBar">
-    <button class="bg-cycle-btn" id="prevBgBtn" title="Previous Wallpaper">◀</button>
-    <div class="bg-title-wrap">
-      <span class="bg-tag">4K BG:</span>
-      <span class="bg-title" id="bgTitleText">01 • Marvel's Spider-Man Action</span>
-    </div>
-    <button class="bg-cycle-btn" id="nextBgBtn" title="Next Wallpaper">▶</button>
-  </div>
 
   <!-- Main Central Card Stage: Single Card Only -->
   <main class="card-stage">
     
     <!-- 3D Card Perspective Wrapper -->
-    <div class="card-container" id="cardContainer" tabindex="0" role="button" aria-label="Spider-Man Dossier Card. Click to flip.">
+    <div class="card-container" id="cardContainer" tabindex="0" role="button" aria-label="Cypherverse Dossier Card. Click to flip.">
       <div class="flip-card" id="flipCard">
         
         <!-- Card Front Face -->
         <div class="card-face card-front">
           <div class="card-glass-shine"></div>
-          <img src="front_image.png" id="frontImg" alt="Spider-Man Dossier Front" class="card-img" />
+          <img src="front_image.png" id="frontImg" alt="Cypherverse Dossier Front" class="card-img" />
           <div class="card-border-glow"></div>
         </div>
 
         <!-- Card Back Face -->
         <div class="card-face card-back">
           <div class="card-glass-shine"></div>
-          <img src="back_image.png" id="backImg" alt="Spider-Man Dossier Back" class="card-img" />
+          <img src="back_image.png" id="backImg" alt="Cypherverse Dossier Back" class="card-img" />
           <div class="card-border-glow"></div>
         </div>
 
@@ -122,24 +81,6 @@
     </div>
 
   </main>
-
-  <!-- 4K Wallpaper Vault Modal -->
-  <div class="wallpaper-modal" id="wallpaperModal">
-    <div class="modal-backdrop" id="modalBackdrop"></div>
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title-group">
-          <h2 class="modal-title">SPIDER-VERSE 4K WALLPAPER VAULT</h2>
-          <span class="modal-subtitle">12 Ultra-HD Wallpapers • Random on Every Launch</span>
-        </div>
-        <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close Wallpapers Vault">✕</button>
-      </div>
-
-      <div class="wallpapers-grid" id="wallpapersGrid">
-        <!-- Rendered dynamically by script.js -->
-      </div>
-    </div>
-  </div>
 
   <script src="script.js"></script>
 </body>
