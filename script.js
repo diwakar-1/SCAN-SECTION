@@ -29,7 +29,88 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Synthesize Web-Shooter / Card Flip "THWIP!" Sound Effect
+  // Synthesize Distinct Comic "Whoosh" & "Thwip" Web Sound Effect for Card Flips
+  function playCardFlipWhoosh() {
+    if (!soundEnabled) return;
+    try {
+      initAudioContext();
+      const now = audioCtx.currentTime;
+
+      // 1. High-tension Web Whip Sweep (Sawtooth)
+      const oscHigh = audioCtx.createOscillator();
+      const gainHigh = audioCtx.createGain();
+      oscHigh.type = 'sawtooth';
+      oscHigh.frequency.setValueAtTime(2400, now);
+      oscHigh.frequency.exponentialRampToValueAtTime(160, now + 0.16);
+      gainHigh.gain.setValueAtTime(0.38, now);
+      gainHigh.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
+      oscHigh.connect(gainHigh);
+      gainHigh.connect(audioCtx.destination);
+      oscHigh.start(now);
+      oscHigh.stop(now + 0.16);
+
+      // 2. Air Displacement Comic Page / Card Whoosh (Triangle Sweep)
+      const oscLow = audioCtx.createOscillator();
+      const gainLow = audioCtx.createGain();
+      oscLow.type = 'triangle';
+      oscLow.frequency.setValueAtTime(540, now);
+      oscLow.frequency.exponentialRampToValueAtTime(65, now + 0.22);
+      gainLow.gain.setValueAtTime(0.42, now);
+      gainLow.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+      oscLow.connect(gainLow);
+      gainLow.connect(audioCtx.destination);
+      oscLow.start(now);
+      oscLow.stop(now + 0.22);
+
+      // 3. Web Shooter Burst Noise Snap
+      const bufferSize = audioCtx.sampleRate * 0.08;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 2600;
+      filter.Q.value = 4.0;
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.48, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noise.start(now);
+      noise.stop(now + 0.08);
+    } catch (err) {
+      console.warn("Card flip whoosh audio notice:", err);
+    }
+  }
+
+  // Synthesize Radio / Spider-Sense Chime when Hero Voice Plays
+  function playSpiderSenseChime() {
+    if (!soundEnabled) return;
+    try {
+      initAudioContext();
+      const now = audioCtx.currentTime;
+      const notes = [587.33, 880, 1174.66]; // D5, A5, D6
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+        gain.gain.setValueAtTime(0.25, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.35);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 0.35);
+      });
+    } catch (e) {}
+  }
+
+  // Standard Web SFX (Tab switches, clicks)
   function playWebThwipSound(pitch = 1500) {
     if (!soundEnabled) return;
     try {
@@ -267,6 +348,107 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Hero Voice Lines Collection
+  const heroVoiceLines = [
+    {
+      hero: "PETER B. PARKER (EARTH-616)",
+      quote: "With great power comes great responsibility. No matter how many hits I take, I always find a way to come back.",
+      pitch: 0.95,
+      rate: 1.05
+    },
+    {
+      hero: "MILES MORALES (EARTH-1610)",
+      quote: "Nah, I'mma do my own thing. Everyone keeps telling me how my story is supposed to go... not this time!",
+      pitch: 1.15,
+      rate: 1.1
+    },
+    {
+      hero: "GWEN STACY (EARTH-65)",
+      quote: "In my universe, I couldn't save my best friend. But being Ghost-Spider taught me that we're never truly alone in the multiverse.",
+      pitch: 1.25,
+      rate: 1.05
+    },
+    {
+      hero: "MIGUEL O'HARA (EARTH-928)",
+      quote: "You have a choice between saving one person and saving an entire universe. That is the canon event.",
+      pitch: 0.82,
+      rate: 0.98
+    }
+  ];
+
+  const heroVoiceBtn = document.getElementById('heroVoiceBtn');
+  const heroQuoteBubble = document.getElementById('heroQuoteBubble');
+  const quoteSpeaker = document.getElementById('quoteSpeaker');
+  const quoteText = document.getElementById('quoteText');
+  let speechTimeout = null;
+
+  // Update Voice Quote Text for Active Card
+  function updateHeroVoiceLine() {
+    const data = heroVoiceLines[currentCardIndex];
+    if (data) {
+      if (quoteSpeaker) quoteSpeaker.textContent = data.hero;
+      if (quoteText) quoteText.textContent = `"${data.quote}"`;
+    }
+  }
+
+  // Play Hero Voice Line Quote
+  function playHeroVoiceQuote() {
+    const data = heroVoiceLines[currentCardIndex];
+    if (!data) return;
+
+    playSpiderSenseChime();
+    updateHeroVoiceLine();
+
+    if (heroQuoteBubble) heroQuoteBubble.classList.add('active');
+    if (heroVoiceBtn) heroVoiceBtn.classList.add('speaking');
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(data.quote);
+      utterance.pitch = data.pitch;
+      utterance.rate = data.rate;
+
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+      if (englishVoices.length > 0) {
+        if (currentCardIndex === 2) { // Gwen
+          const femaleVoice = englishVoices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('karen') || v.name.toLowerCase().includes('victoria'));
+          if (femaleVoice) utterance.voice = femaleVoice;
+        } else {
+          const maleVoice = englishVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('george') || v.name.toLowerCase().includes('alex'));
+          if (maleVoice) utterance.voice = maleVoice;
+        }
+      }
+
+      utterance.onend = () => {
+        if (heroVoiceBtn) heroVoiceBtn.classList.remove('speaking');
+        if (speechTimeout) clearTimeout(speechTimeout);
+        speechTimeout = setTimeout(() => {
+          if (heroQuoteBubble) heroQuoteBubble.classList.remove('active');
+        }, 2500);
+      };
+
+      utterance.onerror = () => {
+        if (heroVoiceBtn) heroVoiceBtn.classList.remove('speaking');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    if (speechTimeout) clearTimeout(speechTimeout);
+    speechTimeout = setTimeout(() => {
+      if (heroQuoteBubble) heroQuoteBubble.classList.remove('active');
+      if (heroVoiceBtn) heroVoiceBtn.classList.remove('speaking');
+    }, 6000);
+  }
+
+  if (heroVoiceBtn) {
+    heroVoiceBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playHeroVoiceQuote();
+    });
+  }
+
   // Switch Active Card with Smooth Transition
   function selectCard(newIndex) {
     if (newIndex < 0) newIndex = cardsCollection.length - 1;
@@ -275,6 +457,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     currentCardIndex = newIndex;
     isFlipped = false;
+
+    // Reset quote bubble on card change
+    if (heroQuoteBubble) heroQuoteBubble.classList.remove('active');
+    if (heroVoiceBtn) heroVoiceBtn.classList.remove('speaking');
 
     // Trigger visual switch animation
     cardContainer.classList.add('switching');
@@ -296,21 +482,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       updateStatusBadge();
+      updateHeroVoiceLine();
 
       // Fade back in
       cardContainer.classList.remove('switching');
     }, 150);
   }
 
-  // Toggle Card Flip
+  // Toggle Card Flip with Distinct Comic "Whoosh" & "Thwip" SFX
   function toggleCardFlip(e) {
     isFlipped = !isFlipped;
 
     // Toggle CSS class
     flipCard.classList.toggle('flipped', isFlipped);
 
-    // Sound & Web Burst
-    playWebThwipSound(1400);
+    // Play Distinct Comic Web Whoosh & Card Flip SFX
+    playCardFlipWhoosh();
+
     const rect = cardContainer.getBoundingClientRect();
     const clickX = e && e.clientX ? e.clientX : rect.left + rect.width / 2;
     const clickY = e && e.clientY ? e.clientY : rect.top + rect.height / 2;
@@ -500,15 +688,125 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================================================
+  // REAL-TIME WEB AUDIO SPECTRUM VISUALIZER
+  // ==========================================================================
+  const vizCanvas = document.getElementById('visualizerCanvas');
+  let vizCtx = null;
+  let audioAnalyser = null;
+  let audioSourceNode = null;
+  let frequencyData = null;
+
+  function initAudioVisualizer() {
+    if (!vizCanvas) return;
+    vizCtx = vizCanvas.getContext('2d');
+
+    if (!audioCtx) initAudioContext();
+
+    if (bgThemeAudio && !audioSourceNode && audioCtx) {
+      try {
+        audioAnalyser = audioCtx.createAnalyser();
+        audioAnalyser.fftSize = 64;
+        audioAnalyser.smoothingTimeConstant = 0.82;
+
+        audioSourceNode = audioCtx.createMediaElementSource(bgThemeAudio);
+        audioSourceNode.connect(audioAnalyser);
+        audioAnalyser.connect(audioCtx.destination);
+
+        frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
+      } catch (e) {
+        console.warn("Visualizer audio source hook notice:", e);
+      }
+    }
+  }
+
+  let vizTime = 0;
+  function renderVisualizer() {
+    requestAnimationFrame(renderVisualizer);
+    if (!vizCanvas || !vizCtx) return;
+
+    const w = vizCanvas.width;
+    const h = vizCanvas.height;
+    vizCtx.clearRect(0, 0, w, h);
+
+    const numBars = 32;
+    const barWidth = (w / numBars) - 3;
+    const isPlaying = bgThemeAudio && !bgThemeAudio.paused;
+
+    if (audioAnalyser && isPlaying && frequencyData) {
+      audioAnalyser.getByteFrequencyData(frequencyData);
+    }
+
+    vizTime += 0.04;
+
+    for (let i = 0; i < numBars; i++) {
+      let barHeight;
+      if (audioAnalyser && isPlaying && frequencyData) {
+        const val = frequencyData[i % frequencyData.length] / 255;
+        barHeight = Math.max(val * (h - 6), 4);
+      } else {
+        // Ambient breathing pulse when audio is paused or loading
+        const wave = Math.sin(vizTime + i * 0.25) * 0.5 + 0.5;
+        barHeight = 4 + wave * 7;
+      }
+
+      const x = i * (barWidth + 3) + 2;
+      const y = h - barHeight;
+
+      // Glowing Neon Gradient (Cyan -> Spider-Blue -> Spider-Red)
+      const gradient = vizCtx.createLinearGradient(0, h, 0, 0);
+      gradient.addColorStop(0, 'rgba(0, 240, 255, 0.9)');
+      gradient.addColorStop(0.5, 'rgba(0, 102, 255, 0.85)');
+      gradient.addColorStop(1, 'rgba(230, 0, 18, 0.95)');
+
+      vizCtx.fillStyle = gradient;
+      vizCtx.beginPath();
+      if (vizCtx.roundRect) {
+        vizCtx.roundRect(x, y, barWidth, barHeight, [3, 3, 0, 0]);
+      } else {
+        vizCtx.rect(x, y, barWidth, barHeight);
+      }
+      vizCtx.fill();
+
+      // Top Peak White Glow Cap
+      vizCtx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      vizCtx.fillRect(x, y, barWidth, 2);
+    }
+  }
+
+  // Hook visualizer when audio starts
+  function startVisualizerEngine() {
+    initAudioVisualizer();
+    renderVisualizer();
+  }
+
   if (bgThemeAudio) {
-    bgThemeAudio.addEventListener('play', () => updateMusicUI(true));
+    bgThemeAudio.addEventListener('play', () => {
+      initAudioVisualizer();
+      updateMusicUI(true);
+    });
     bgThemeAudio.addEventListener('pause', () => updateMusicUI(false));
   }
 
   // Register first gesture listeners for autoplay fallback
-  document.addEventListener('pointerdown', handleFirstMusicGesture, { once: true });
-  document.addEventListener('touchstart', handleFirstMusicGesture, { once: true });
-  document.addEventListener('keydown', handleFirstMusicGesture, { once: true });
+  document.addEventListener('pointerdown', () => {
+    initAudioContext();
+    initAudioVisualizer();
+    handleFirstMusicGesture();
+  }, { once: true });
+  document.addEventListener('touchstart', () => {
+    initAudioContext();
+    initAudioVisualizer();
+    handleFirstMusicGesture();
+  }, { once: true });
+  document.addEventListener('keydown', () => {
+    initAudioContext();
+    initAudioVisualizer();
+    handleFirstMusicGesture();
+  }, { once: true });
+
+  // Start visualizer loop
+  startVisualizerEngine();
 
   // Attempt initial playback on load
   safePlayThemeMusic();

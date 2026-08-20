@@ -153,6 +153,23 @@
           <div class="card-face card-back">
             <div class="card-glass-shine"></div>
             <img src="back_image.png" id="backImg" alt="Spider-Man Dossier Back" class="card-img" />
+            
+            <!-- Hero Voice Line Speaker Button -->
+            <button class="hero-voice-btn" id="heroVoiceBtn" title="Play Hero Iconic Voice Quote" aria-label="Play Hero Voice Line">
+              <span class="speaker-icon">🎙️</span>
+              <span class="voice-btn-label">PLAY VOICE QUOTE</span>
+              <span class="voice-wave-dot"></span>
+            </button>
+
+            <!-- Comic Quote Bubble Overlay -->
+            <div class="hero-quote-bubble" id="heroQuoteBubble" aria-live="polite">
+              <div class="quote-header">
+                <span class="quote-badge">SPIDER-COMIC HUD</span>
+                <span class="quote-speaker" id="quoteSpeaker">PETER B. PARKER</span>
+              </div>
+              <div class="quote-text" id="quoteText">"With great power comes great responsibility. No matter how many hits I take, I always find a way to come back."</div>
+            </div>
+
             <div class="card-border-glow"></div>
           </div>
 
@@ -174,6 +191,15 @@
         </svg>
         <span>CLICK CARD TO FLIP</span>
       </button>
+    </div>
+
+    <!-- Glowing Neon Audio Visualizer Bar -->
+    <div class="audio-visualizer-wrap" id="audioVisualizerWrap">
+      <div class="visualizer-label-wrap">
+        <span class="viz-dot"></span>
+        <span class="viz-label">LIVE AUDIO SPECTRUM</span>
+      </div>
+      <canvas id="visualizerCanvas" class="visualizer-canvas" width="600" height="42"></canvas>
     </div>
 
   </main>

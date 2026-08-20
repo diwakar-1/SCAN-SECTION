@@ -587,6 +587,123 @@ body {
   z-index: 3;
 }
 
+/* Hero Voice Line Speaker Button on Card Back */
+.hero-voice-btn {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 50px;
+  background: rgba(14, 18, 28, 0.88);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-white);
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 240, 255, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.hero-voice-btn:hover {
+  background: linear-gradient(135deg, var(--spider-blue), var(--spider-blue-bright));
+  border-color: #FFF;
+  box-shadow: 0 0 25px var(--spider-blue-glow);
+  transform: translateX(-50%) translateY(-2px) scale(1.05);
+}
+
+.hero-voice-btn:active {
+  transform: translateX(-50%) scale(0.97);
+}
+
+.voice-wave-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+  animation: pulseDot 1.2s infinite ease-in-out;
+}
+
+.hero-voice-btn.speaking {
+  background: linear-gradient(135deg, var(--spider-red), #B3000E);
+  border-color: #FFF;
+  box-shadow: 0 0 25px var(--spider-red-glow);
+}
+
+.hero-voice-btn.speaking .voice-wave-dot {
+  background-color: #FFF;
+  box-shadow: 0 0 10px #FFF;
+}
+
+/* Comic Quote Bubble Overlay on Card */
+.hero-quote-bubble {
+  position: absolute;
+  top: 18px;
+  left: 14px;
+  right: 14px;
+  z-index: 10;
+  background: rgba(10, 14, 22, 0.94);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.25);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.hero-quote-bubble.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.25rem;
+}
+
+.quote-badge {
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--spider-red);
+  letter-spacing: 1px;
+}
+
+.quote-speaker {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  letter-spacing: 1px;
+}
+
+.quote-text {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text-white);
+  font-style: italic;
+}
+
 /* Action Controls & Flip Prompt Button */
 .action-controls {
   display: flex;
@@ -632,6 +749,51 @@ body {
 
 .flip-prompt-btn:hover .flip-icon {
   transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   GLOWING NEON AUDIO EQUALIZER VISUALIZER
+   ========================================================================== */
+.audio-visualizer-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: min(520px, 90vw);
+  background: rgba(14, 18, 28, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 16px;
+  padding: 0.6rem 1.2rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.12);
+  margin-top: 0.3rem;
+}
+
+.visualizer-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--accent-cyan);
+}
+
+.viz-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--spider-red);
+  box-shadow: 0 0 8px var(--spider-red);
+  animation: pulseDot 1s infinite;
+}
+
+.visualizer-canvas {
+  width: 100%;
+  height: 38px;
+  display: block;
 }
 
 /* ==========================================================================
