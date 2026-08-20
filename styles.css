@@ -249,6 +249,48 @@ body {
   border-color: #FFF;
 }
 
+/* Soundwave Equalizer for Background Music */
+.action-btn.music-btn {
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.action-btn.music-btn:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
+}
+
+.soundwave-icon {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  width: 14px;
+}
+
+.soundwave-icon .bar {
+  width: 2px;
+  height: 3px;
+  background-color: var(--accent-cyan);
+  border-radius: 2px;
+  transition: height 0.2s ease, background-color 0.3s ease;
+}
+
+@keyframes musicWave1 { 0%, 100% { height: 3px; } 50% { height: 13px; } }
+@keyframes musicWave2 { 0%, 100% { height: 13px; } 50% { height: 5px; } }
+@keyframes musicWave3 { 0%, 100% { height: 6px; } 50% { height: 14px; } }
+@keyframes musicWave4 { 0%, 100% { height: 11px; } 50% { height: 3px; } }
+
+.action-btn.music-btn.is-playing .soundwave-icon .bar:nth-child(1) { animation: musicWave1 1.1s ease-in-out infinite; }
+.action-btn.music-btn.is-playing .soundwave-icon .bar:nth-child(2) { animation: musicWave2 0.8s ease-in-out infinite 0.15s; }
+.action-btn.music-btn.is-playing .soundwave-icon .bar:nth-child(3) { animation: musicWave3 1.3s ease-in-out infinite 0.3s; }
+.action-btn.music-btn.is-playing .soundwave-icon .bar:nth-child(4) { animation: musicWave4 0.9s ease-in-out infinite 0.2s; }
+
+.action-btn.music-btn.is-paused .soundwave-icon .bar {
+  animation: none !important;
+  height: 3px;
+  background-color: var(--text-muted);
+}
+
 /* ==========================================================================
    WALLPAPER INFO STRIP (Active Background Indicator)
    ========================================================================== */

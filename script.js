@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     flipCard.style.transform = `rotateY(${baseRotationY}deg) rotateX(0deg) scale(1)`;
   });
 
-  // Sound Toggle Button
+  // Sound FX Toggle Button
   const soundToggleBtn = document.getElementById('soundToggleBtn');
   soundToggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -413,6 +413,105 @@ document.addEventListener('DOMContentLoaded', () => {
     soundToggleBtn.querySelector('.sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
     if (soundEnabled) playWebThwipSound(1600);
   });
+
+  // ==========================================================================
+  // LOOPING BACKGROUND THEME MUSIC ENGINE (from music/ folder)
+  // ==========================================================================
+  const bgThemeAudio = document.getElementById('bgThemeAudio');
+  const musicToggleBtn = document.getElementById('musicToggleBtn');
+  const musicBtnText = document.getElementById('musicBtnText');
+
+  let isMusicPlaying = false;
+  let hasUserInteractedForMusic = false;
+
+  if (bgThemeAudio) {
+    bgThemeAudio.loop = true;
+    bgThemeAudio.volume = 0.55; // 55% background theme volume
+  }
+
+  function updateMusicUI(playing) {
+    isMusicPlaying = playing;
+    if (musicToggleBtn) {
+      if (playing) {
+        musicToggleBtn.classList.remove('is-paused');
+        musicToggleBtn.classList.add('is-playing');
+        if (musicBtnText) musicBtnText.textContent = 'MUSIC: ON';
+      } else {
+        musicToggleBtn.classList.remove('is-playing');
+        musicToggleBtn.classList.add('is-paused');
+        if (musicBtnText) musicBtnText.textContent = 'MUSIC: OFF';
+      }
+    }
+  }
+
+  // Safely attempt autoplay on load
+  async function safePlayThemeMusic() {
+    if (!bgThemeAudio) return;
+    try {
+      await bgThemeAudio.play();
+      updateMusicUI(true);
+    } catch (err) {
+      // Autoplay blocked by browser policy; wait for first user gesture
+      updateMusicUI(false);
+      console.info('Background music autoplay awaiting first user interaction.');
+    }
+  }
+
+  // Toggle Theme Music Play/Pause
+  function toggleThemeMusic() {
+    if (!bgThemeAudio) return;
+    if (bgThemeAudio.paused) {
+      bgThemeAudio.play()
+        .then(() => updateMusicUI(true))
+        .catch(err => console.warn('Audio play error:', err));
+    } else {
+      bgThemeAudio.pause();
+      updateMusicUI(false);
+    }
+  }
+
+  // First user interaction fallback to start background audio
+  function handleFirstMusicGesture() {
+    if (hasUserInteractedForMusic) return;
+    hasUserInteractedForMusic = true;
+
+    // Clean up one-time listeners
+    document.removeEventListener('pointerdown', handleFirstMusicGesture);
+    document.removeEventListener('touchstart', handleFirstMusicGesture);
+    document.removeEventListener('keydown', handleFirstMusicGesture);
+
+    if (bgThemeAudio && bgThemeAudio.paused && !musicToggleBtn.classList.contains('manual-paused')) {
+      bgThemeAudio.play()
+        .then(() => updateMusicUI(true))
+        .catch(() => {});
+    }
+  }
+
+  if (musicToggleBtn) {
+    musicToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hasUserInteractedForMusic = true;
+      if (!bgThemeAudio.paused) {
+        musicToggleBtn.classList.add('manual-paused');
+      } else {
+        musicToggleBtn.classList.remove('manual-paused');
+      }
+      toggleThemeMusic();
+    });
+  }
+
+  if (bgThemeAudio) {
+    bgThemeAudio.addEventListener('play', () => updateMusicUI(true));
+    bgThemeAudio.addEventListener('pause', () => updateMusicUI(false));
+  }
+
+  // Register first gesture listeners for autoplay fallback
+  document.addEventListener('pointerdown', handleFirstMusicGesture, { once: true });
+  document.addEventListener('touchstart', handleFirstMusicGesture, { once: true });
+  document.addEventListener('keydown', handleFirstMusicGesture, { once: true });
+
+  // Attempt initial playback on load
+  safePlayThemeMusic();
 
   // ==========================================================================
   // EXCLUSIVE BACKGROUND FOLDER WALLPAPERS COLLECTION & DYNAMIC ENGINE
@@ -681,6 +780,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (e.key === 'w' || e.key === 'W') {
       if (document.activeElement.tagName !== 'INPUT') {
         randomizeWallpaper();
+      }
+    } else if (e.key === 'm' || e.key === 'M') {
+      if (document.activeElement.tagName !== 'INPUT') {
+        toggleThemeMusic();
       }
     }
   });

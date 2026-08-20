@@ -79,6 +79,17 @@
         <span class="btn-text">GET 4K</span>
       </a>
 
+      <!-- Looping Background Music Toggle -->
+      <button id="musicToggleBtn" class="action-btn icon-btn music-btn is-playing" title="Toggle Looping Background Music (Press M)">
+        <div class="soundwave-icon" aria-hidden="true">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+        <span class="btn-text" id="musicBtnText">MUSIC: ON</span>
+      </button>
+
       <!-- Sound FX Toggle -->
       <button id="soundToggleBtn" class="action-btn icon-btn" title="Toggle Web Sound Effects">
         <span class="sound-icon">🔊</span>
@@ -86,6 +97,11 @@
       </button>
     </div>
   </header>
+
+  <!-- Looping Background Theme Music Element -->
+  <audio id="bgThemeAudio" loop preload="auto">
+    <source src="music/Audio 2026-08-20 at 12.22.53 PM.mpeg" type="audio/mpeg">
+  </audio>
 
   <!-- Background Wallpaper Active Info Strip -->
   <div class="wallpaper-info-bar" id="wallpaperInfoBar">
