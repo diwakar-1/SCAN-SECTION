@@ -212,11 +212,13 @@ body {
    ========================================================================== */
 .card-stage {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
   width: 100%;
   flex: 1;
-  padding: 1rem;
+  padding: 0.5rem 1rem 1rem 1rem;
   z-index: 10;
   overflow: hidden;
 }
@@ -333,6 +335,102 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.12);
   pointer-events: none;
   z-index: 3;
+}
+
+/* ==========================================================================
+   BLINKING TAP ON CARD INDICATOR
+   ========================================================================== */
+.tap-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 15;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tap-hint:hover,
+.tap-hint:focus-visible {
+  transform: scale(1.06);
+}
+
+.tap-hint-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.48rem 1.25rem;
+  background: rgba(11, 14, 20, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid var(--spider-red);
+  border-radius: 999px;
+  box-shadow: 0 0 16px var(--spider-red-glow), inset 0 0 8px rgba(230, 0, 18, 0.2);
+  animation: tapBlinkGlow 1.8s infinite ease-in-out;
+}
+
+@keyframes tapBlinkGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    border-color: rgba(230, 0, 18, 0.95);
+    box-shadow: 0 0 20px rgba(230, 0, 18, 0.7), inset 0 0 10px rgba(230, 0, 18, 0.35);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.97);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 4px rgba(230, 0, 18, 0.1), inset 0 0 2px transparent;
+  }
+}
+
+.tap-hand-icon {
+  width: 17px;
+  height: 17px;
+  color: #FFD700;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.75));
+  animation: tapHandPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes tapHandPulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.15);
+  }
+}
+
+.tap-hint-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--spider-red);
+  box-shadow: 0 0 8px var(--spider-red), 0 0 16px var(--spider-red);
+  animation: dotFlash 0.9s infinite alternate ease-in-out;
+}
+
+@keyframes dotFlash {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+.tap-hint-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.75rem, 2.8vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  color: #FFFFFF;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 18px var(--spider-red);
+  text-transform: uppercase;
 }
 
 /* Mobile Responsiveness & Small Viewports */

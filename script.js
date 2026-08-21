@@ -361,6 +361,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Also allow clicking directly on the blinking tap hint
+    const tapHint = document.getElementById('tapHint');
+    if (tapHint) {
+      tapHint.addEventListener('click', (e) => {
+        toggleCardFlip(e);
+      });
+      tapHint.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          toggleCardFlip();
+        }
+      });
+    }
+
     window.addEventListener('keydown', (e) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
