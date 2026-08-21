@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ultra-rare Lucky Card Backs (luck_1.png and luck_2.png both appear on the BACK)
   const rareBacks = ["luck_1.png", "luck_2.png"];
 
-  // Rare probability: 5% chance for the back to be a rare lucky card (luck_1 or luck_2)
-  const RARE_BACK_PROBABILITY = 0.05;
+  // Rare probability: 15% chance for the back to be a rare lucky card (luck_1 or luck_2)
+  const RARE_BACK_PROBABILITY = 0.15;
 
   // Front is ALWAYS a standard character card on start (never rare on starting front)
   const baseCardIndex = Math.floor(Math.random() * standardCards.length);
