@@ -3,8 +3,8 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Pool of dossier cards (strictly matched front N to back N, 1 through 6)
-  const cardsList = [
+  // Standard dossier cards (front 1-6 with standard QR backs 1-6)
+  const standardCards = [
     { id: 1, front: "front 1.png", back: "back 1.png" },
     { id: 2, front: "front 2.png", back: "back 2.png" },
     { id: 3, front: "front 3.png", back: "back 3.png" },
@@ -13,18 +13,40 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 6, front: "front 6.png", back: "back 6.png" }
   ];
 
-  // Pick a random card pair on load (front N <-> back N)
-  const currentCardIndex = Math.floor(Math.random() * cardsList.length);
-  let isFlipped = false;
+  // Ultra-rare Lucky Card Backs (luck_1.png and luck_2.png both appear on the BACK)
+  const rareBacks = ["luck_1.png", "luck_2.png"];
 
-  // Initialize selected card images directly without flash/glitch
+  // Rare probability: 5% chance for the back to be a rare lucky card (luck_1 or luck_2)
+  const RARE_BACK_PROBABILITY = 0.05;
+
+  // Front is ALWAYS a standard character card on start (never rare on starting front)
+  const baseCardIndex = Math.floor(Math.random() * standardCards.length);
+  const baseCard = standardCards[baseCardIndex];
+
+  // Roll rare back probability on card creation
+  let isRareBack = Math.random() < RARE_BACK_PROBABILITY;
+  let activeBack = baseCard.back;
+
+  if (isRareBack) {
+    activeBack = rareBacks[Math.floor(Math.random() * rareBacks.length)];
+  }
+
+  let isFlipped = false;
+  let flipCount = 0;
+
+  // Initialize front with standard character artwork and back with standard/rare back
   const frontImg = document.getElementById('frontImg');
   const backImg = document.getElementById('backImg');
-  const selectedCard = cardsList[currentCardIndex];
+  const cardContainer = document.getElementById('cardContainer');
+  const flipCard = document.getElementById('flipCard');
   
   if (frontImg && backImg) {
-    frontImg.src = selectedCard.front;
-    backImg.src = selectedCard.back;
+    frontImg.src = baseCard.front;
+    backImg.src = activeBack;
+  }
+
+  if (isRareBack && cardContainer) {
+    cardContainer.classList.add('is-rare');
   }
 
   // ==========================================================================
@@ -211,13 +233,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const bursts = [];
 
   class WebBurstParticle {
-    constructor(x, y, angle, speed) {
+    constructor(x, y, angle, speed, isGold = false) {
       this.x = x;
       this.y = y;
       this.vx = Math.cos(angle) * speed;
       this.vy = Math.sin(angle) * speed;
       this.life = 1.0;
       this.decay = Math.random() * 0.035 + 0.02;
+      this.isGold = isGold;
     }
 
     update() {
@@ -230,18 +253,22 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.beginPath();
       ctx.moveTo(mouse.x, mouse.y);
       ctx.lineTo(this.x, this.y);
-      ctx.strokeStyle = `rgba(255, 255, 255, ${this.life * 0.8})`;
-      ctx.lineWidth = 1.5;
+      if (this.isGold) {
+        ctx.strokeStyle = `rgba(255, 215, 0, ${this.life * 0.95})`;
+      } else {
+        ctx.strokeStyle = `rgba(255, 255, 255, ${this.life * 0.8})`;
+      }
+      ctx.lineWidth = this.isGold ? 2 : 1.5;
       ctx.stroke();
     }
   }
 
-  function triggerWebBurst(x, y) {
-    const numFibers = 16;
+  function triggerWebBurst(x, y, isGold = false) {
+    const numFibers = isGold ? 24 : 16;
     for (let i = 0; i < numFibers; i++) {
       const angle = (Math.PI * 2 / numFibers) * i + (Math.random() - 0.5) * 0.2;
       const speed = Math.random() * 8 + 6;
-      bursts.push(new WebBurstParticle(x, y, angle, speed));
+      bursts.push(new WebBurstParticle(x, y, angle, speed, isGold));
     }
   }
 
@@ -298,14 +325,31 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // CARD FLIP & 3D TILT MECHANICS (MOBILE TOUCH FRIENDLY)
   // ==========================================================================
-  const cardContainer = document.getElementById('cardContainer');
-  const flipCard = document.getElementById('flipCard');
-
   function toggleCardFlip(e) {
+    if (!flipCard || !cardContainer) return;
+
+    flipCount++;
     isFlipped = !isFlipped;
+
+    // Rare Lucky Back can also unlock dynamically on subsequent flips
+    if (!isRareBack && flipCount >= 2) {
+      const isRareRoll = Math.random() < RARE_BACK_PROBABILITY;
+      if (isRareRoll) {
+        isRareBack = true;
+        activeBack = rareBacks[Math.floor(Math.random() * rareBacks.length)];
+        cardContainer.classList.add('is-rare');
+
+        setTimeout(() => {
+          if (backImg) {
+            backImg.src = activeBack;
+          }
+        }, 200);
+      }
+    }
+
     flipCard.classList.toggle('flipped', isFlipped);
 
-    playWebThwipSound(1400);
+    playWebThwipSound(isRareBack ? 1650 : 1400);
     const rect = cardContainer.getBoundingClientRect();
     let clickX = rect.left + rect.width / 2;
     let clickY = rect.top + rect.height / 2;
@@ -319,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clickY = e.changedTouches[0].clientY;
       }
     }
-    triggerWebBurst(clickX, clickY);
+    triggerWebBurst(clickX, clickY, isRareBack);
   }
 
   if (cardContainer) {

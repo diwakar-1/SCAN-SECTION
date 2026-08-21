@@ -338,6 +338,58 @@ body {
 }
 
 /* ==========================================================================
+   ULTRA-RARE LUCKY CARD SPECIAL FX & HOLOGRAPHIC AURA
+   ========================================================================== */
+.card-container.is-rare .card-face {
+  border-color: rgba(255, 215, 0, 0.75);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.9),
+    0 0 30px rgba(255, 215, 0, 0.45),
+    0 0 60px rgba(255, 140, 0, 0.25);
+  animation: rareCardPulse 2.8s infinite alternate ease-in-out;
+}
+
+.card-container.is-rare:hover .card-face,
+.card-container.is-rare:active .card-face {
+  border-color: #FFD700;
+  box-shadow: 
+    0 35px 60px -15px rgba(0, 0, 0, 0.95),
+    0 0 45px rgba(255, 215, 0, 0.8),
+    0 0 90px rgba(255, 80, 0, 0.45);
+}
+
+.card-container.is-rare .card-border-glow {
+  border-color: rgba(255, 215, 0, 0.45);
+  box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.25);
+}
+
+.card-container.is-rare .card-glass-shine {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.35) 0%,
+    rgba(255, 255, 255, 0.2) 30%,
+    rgba(0, 240, 255, 0.25) 55%,
+    transparent 75%
+  );
+  opacity: 0.75;
+}
+
+@keyframes rareCardPulse {
+  0% {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.9),
+      0 0 25px rgba(255, 215, 0, 0.35),
+      0 0 50px rgba(255, 140, 0, 0.18);
+  }
+  100% {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.9),
+      0 0 45px rgba(255, 215, 0, 0.7),
+      0 0 85px rgba(255, 140, 0, 0.4);
+  }
+}
+
+/* ==========================================================================
    BLINKING TAP ON CARD INDICATOR
    ========================================================================== */
 .tap-hint {
