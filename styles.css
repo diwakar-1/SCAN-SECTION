@@ -221,6 +221,17 @@ body {
   overflow: hidden;
 }
 
+@keyframes cardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* 3D Card Container */
 .card-container {
   perspective: 1200px;
@@ -232,6 +243,7 @@ body {
   position: relative;
   touch-action: manipulation;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .card-container:focus-visible .card-face {

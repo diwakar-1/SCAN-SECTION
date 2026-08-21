@@ -3,20 +3,21 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Pool of dossier cards (strictly matched front N to back N)
+  // Pool of dossier cards (strictly matched front N to back N, 1 through 6)
   const cardsList = [
     { id: 1, front: "front 1.png", back: "back 1.png" },
     { id: 2, front: "front 2.png", back: "back 2.png" },
     { id: 3, front: "front 3.png", back: "back 3.png" },
     { id: 4, front: "front 4.png", back: "back 4.png" },
-    { id: 5, front: "front 5.png", back: "back 5.png" }
+    { id: 5, front: "front 5.png", back: "back 5.png" },
+    { id: 6, front: "front 6.png", back: "back 6.png" }
   ];
 
   // Pick a random card pair on load (front N <-> back N)
   const currentCardIndex = Math.floor(Math.random() * cardsList.length);
   let isFlipped = false;
 
-  // Initialize selected card images
+  // Initialize selected card images directly without flash/glitch
   const frontImg = document.getElementById('frontImg');
   const backImg = document.getElementById('backImg');
   const selectedCard = cardsList[currentCardIndex];
@@ -26,7 +27,44 @@ document.addEventListener('DOMContentLoaded', () => {
     backImg.src = selectedCard.back;
   }
 
-  // Audio FX State
+  // ==========================================================================
+  // PERMANENT BACKGROUND MUSIC ENGINE (NON-STOPPING LOOP)
+  // ==========================================================================
+  const bgMusic = document.getElementById('bgMusic') || new Audio('spiderman_nwh.mp3');
+  bgMusic.loop = true;
+  bgMusic.volume = 0.7;
+
+  const playBackgroundMusic = () => {
+    bgMusic.play().catch(() => {
+      // Browser autoplay restriction will be lifted on user's first touch/click
+    });
+  };
+
+  // Attempt immediate autoplay
+  playBackgroundMusic();
+
+  // Enforce continuous playback on any user interaction (touch, click, keydown, scroll)
+  const unlockAudio = () => {
+    playBackgroundMusic();
+    initAudioContext();
+  };
+
+  ['click', 'touchstart', 'touchend', 'pointerdown', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, unlockAudio, { passive: true });
+    document.addEventListener(evt, unlockAudio, { passive: true });
+  });
+
+  // Ensure audio cannot be paused by user or system
+  bgMusic.addEventListener('pause', () => {
+    playBackgroundMusic();
+  });
+
+  bgMusic.addEventListener('ended', () => {
+    bgMusic.currentTime = 0;
+    playBackgroundMusic();
+  });
+
+  // Audio FX State (Web Thwip FX)
   let soundEnabled = true;
   let audioCtx = null;
 
@@ -39,15 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
       audioCtx.resume();
     }
   }
-
-  // Enable audio context automatically on first touch / tap (iOS Safari & Android Chrome)
-  const enableAudioOnTouch = () => {
-    initAudioContext();
-    document.removeEventListener('touchstart', enableAudioOnTouch);
-    document.removeEventListener('click', enableAudioOnTouch);
-  };
-  document.addEventListener('touchstart', enableAudioOnTouch, { passive: true });
-  document.addEventListener('click', enableAudioOnTouch, { passive: true });
 
   // Synthesize Web-Shooter / Card Flip "THWIP!" Sound Effect
   function playWebThwipSound(pitch = 1500) {
